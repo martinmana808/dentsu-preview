@@ -37,8 +37,8 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
   const sizes = ['300x600', '300x250', '728x90', '320x50', '160x600'];
 
   // Ranges State
-  const [selectedRange, setSelectedRange] = useState('Tall');
-  const ranges = ['< 480px', '480px > 768px', '1000px > 2000px', '200px <'];
+  const [selectedRange, setSelectedRange] = useState('<480px');
+  const ranges = ['<480px', '480px>768px', '1000px>2000px', '200px<'];
 
   // Mock Override State for UI Demo
   const [showApplyToOthers, setShowApplyToOthers] = useState<string | null>(null);
