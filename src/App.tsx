@@ -89,7 +89,7 @@ export default function App() {
           )}
 
           {/* Floating Toolbar - Right Side */}
-          <div className="absolute top-20 right-6 z-10" style={{ right: isPanelOpen ? '420px' : '24px', transition: 'right 0.3s ease-in-out' }}>
+          <div className="absolute top-20 right-6 z-10" style={{ right: isPanelOpen ? '24px' : '24px', transition: 'right 0.3s ease-in-out' }}>
             <Toolbar 
               onGlobalClick={handleGlobalClick}
               onSpecificClick={handleSpecificClick}

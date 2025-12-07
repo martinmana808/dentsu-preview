@@ -5,7 +5,6 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { SelectedElement } from '../App';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
 
 type PropertiesPanelProps = {
@@ -42,6 +41,10 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
 
   // Mock Override State for UI Demo
   const [showApplyToOthers, setShowApplyToOthers] = useState<string | null>(null);
+
+  // Mock Dropdown State
+  const [isRangesOpen, setIsRangesOpen] = useState(false);
+  const [isSizesOpen, setIsSizesOpen] = useState(false);
 
   const expandAll = () => setExpandedSections(new Set(ALL_SECTIONS));
   const collapseAll = () => setExpandedSections(new Set());
@@ -196,26 +199,44 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
 
   const renderRangeProperties = () => (
     <div className="space-y-4 range-properties">
-      <Label htmlFor="specific-headline-text">Select Range</Label>
+<label data-slot="label" class="flex items-center gap-2  leading-none text-gray-500 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 my-2 text-sm text-gray-900 mb-3" for="specific-headline-text ">Select Range</label>
+      
       {/* Range Selector */}
-      <div className="flex items-center gap-2">
-        <Select value={selectedRange} onValueChange={setSelectedRange}>
-          <SelectTrigger className="flex-1 h-9 bg-purple-50 border-purple-200 text-purple-900 shadow-sm font-medium focus:ring-2 focus:ring-purple-500/20">
-            <SelectValue placeholder="Select range" />
-          </SelectTrigger>
-          <SelectContent>
-            {ranges.map(range => (
-              <SelectItem key={range} value={range}>{range}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <div className="flex items-center gap-2 relative z-50">
+        <div className="flex-1 relative">
+           <button 
+            onClick={() => setIsRangesOpen(!isRangesOpen)}
+            className="selector w-full flex items-center justify-between h-9 px-3 py-2 bg-purple-50 border border-purple-200 rounded-md text-sm text-purple-900 shadow-sm font-medium focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+          >
+            <span>{selectedRange}</span>
+            <ChevronDown className="h-4 w-4 opacity-50" />
+          </button>
+          
+          {isRangesOpen && (
+            <div className="absolute top-full left-0 w-full mt-1 bg-white rounded-md border border-gray-200 shadow-lg py-1 z-50 max-h-60 overflow-auto">
+              {ranges.map(range => (
+                <button
+                  key={range}
+                  onClick={() => {
+                    setSelectedRange(range);
+                    setIsRangesOpen(false);
+                  }}
+                  className="w-full text-left px-2 py-1.5 text-sm hover:bg-purple-50 text-gray-900 flex items-center justify-between group"
+                >
+                  <span>{range}</span>
+                  {selectedRange === range && <Check className="h-4 w-4 text-purple-600" />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         
         <Tooltip>
           <TooltipTrigger asChild>
             <Button 
               size="icon" 
               variant="outline" 
-              className="h-9 w-9 border-dashed bg-purple-100 border-purple-200 text-purple-700 hover:bg-purple-200 hover:border-purple-300 hover:text-purple-800 shrink-0"
+              className="h-9 w-9 border-dashed bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-200 hover:border-purple-300 hover:text-purple-800 shrink-0"
             >
               <Plus className="w-4 h-4" />
             </Button>
@@ -225,6 +246,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
           </TooltipContent>
         </Tooltip>
       </div>
+      
       <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={expandAll} className="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
                           Expand all properties
@@ -399,26 +421,43 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
 
   const renderSizesProperties = () => (
     <div className="space-y-4 sizes-properties">
-      <Label htmlFor="specific-headline-text">Select Size</Label>
-      {/* Size Selector */}
-      <div className="flex items-center gap-2">
-        <Select value={selectedSize} onValueChange={setSelectedSize}>
-          <SelectTrigger className="flex-1 h-9 bg-orange-50 border-orange-200 text-orange-900 shadow-sm font-medium focus:ring-2 focus:ring-orange-500/20">
-            <SelectValue placeholder="Select size" />
-          </SelectTrigger>
-          <SelectContent>
-            {sizes.map(size => (
-              <SelectItem key={size} value={size}>{size}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <label data-slot="label" class="flex items-center gap-2  leading-none text-gray-500 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 my-2 text-sm text-gray-900 mb-3" for="specific-headline-text ">Select Size</label>
+        {/* Size Selector */}
+      <div className="flex items-center gap-2 relative z-40">
+        <div className="flex-1 relative">
+          <button 
+            onClick={() => setIsSizesOpen(!isSizesOpen)}
+             className="w-full flex items-center justify-between h-9 px-3 py-2 bg-orange-50 border border-orange-200 rounded-md text-sm text-orange-900 shadow-sm font-medium focus:outline-none focus:ring-2 focus:ring-orange-500/20"
+          >
+            <span>{selectedSize}</span>
+            <ChevronDown className="h-4 w-4 opacity-50" />
+          </button>
+
+          {isSizesOpen && (
+            <div className="absolute top-full left-0 w-full mt-1 bg-white rounded-md border border-gray-200 shadow-lg py-1 z-50 max-h-60 overflow-auto">
+              {sizes.map(size => (
+                <button
+                  key={size}
+                  onClick={() => {
+                    setSelectedSize(size);
+                    setIsSizesOpen(false);
+                  }}
+                   className="w-full text-left px-2 py-1.5 text-sm hover:bg-orange-50 text-gray-900 flex items-center justify-between group"
+                >
+                  <span>{size}</span>
+                  {selectedSize === size && <Check className="h-4 w-4 text-orange-600" />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         
         <Tooltip>
           <TooltipTrigger asChild>
             <Button 
               size="icon" 
               variant="outline" 
-              className="h-9 w-9 border-dashed bg-orange-100 border-orange-200 text-orange-700 hover:bg-orange-200 hover:border-orange-300 hover:text-orange-800 shrink-0"
+              className="h-9 w-9 border-dashed bg-orange-50 border-orange-200 700 hover:bg-orange-200 hover:border-orange-300 hover:text-orange-800 shrink-0"
             >
               <Plus className="w-4 h-4" />
             </Button>
@@ -443,15 +482,39 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
           title="Headline"
           isExpanded={expandedSections.has('headline')}
           onToggle={() => toggleSection('headline')}
+          extraClass="overrideSelf"
         >
-          <div className="space-y-2">
-            <Label htmlFor="specific-headline-text">Text</Label>
+          <div className="space-y-2 ">
+            <div className=" items-center justify-between">
+              <Label htmlFor="range-headline-text">Text</Label>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="applyToOthers h-6 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                onClick={() => setShowApplyToOthers(showApplyToOthers === 'size-font3' ? null : 'size-font3')}
+              >
+                Apply to others 
+              </Button>
+            </div>
             <Input 
-              id="specific-headline-text" 
-              value="THE GOAT" 
+              id="range-headline-text" 
+              value="THE GREATEST" 
               readOnly 
-              className=" !border-orange-500 ring-1 !ring-orange-500" // Active Override
+              className="overrideActive !border-purple-500 ring-1 !ring-purple-500" // Active Override
             />
+            
+            {showApplyToOthers === 'size-font3' && (
+                <div className="mt-2 p-2 bg-orange-50 rounded border border-blue-100 space-y-2">
+                  <div className="text-xs font-medium text-blue-900">Apply override to:</div>
+                  {sizes.filter(s => s !== selectedSize).map(size => (
+                    <div key={size} className="flex items-center gap-2">
+                      <input type="checkbox" id={`apply-${size}`} className="rounded border-gray-300 text-blue-600" />
+                      <label htmlFor={`apply-${size}`} className="text-xs text-gray-700">{size}</label>
+                    </div>
+                  ))}
+                  <Button size="sm" className="w-full h-7 text-xs mt-1">Apply</Button>
+                </div>
+              )}
           </div>
         </PropertySection>
 
@@ -628,9 +691,9 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
 
   return (
     <div
-      className={`fixed top-20 right-6 w-96 max-h-[calc(100vh-120px)] bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 z-50 transform transition-all duration-300 ease-in-out ${
-        isOpen ? 'translate-x-0 opacity-100' : 'translate-x-[450px] opacity-0 pointer-events-none'
-      }`}
+      className={`fixed top-20 right-6 right-[80px] w-96 max-h-[calc(100vh-120px)] bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 z-50 transform transition-all duration-300 ease-in-out ${
+        isOpen ? 'translate-x-0 opacity-100' : 'translate-x-[80px] opacity-0 pointer-events-none'
+      }`} style={{ right: isOpen ? '80px' : '80px', transition: 'all 0.3s ease-in-out' }}
     >
       <div className="flex flex-col h-full max-h-[calc(100vh-120px)]">
         {/* Header */}

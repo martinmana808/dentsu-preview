@@ -716,6 +716,10 @@
     translate: var(--tw-translate-x) var(--tw-translate-y);
   }
 
+  .translate-x-\[80px\] {
+    --tw-translate-x: 80px;
+    translate: var(--tw-translate-x) var(--tw-translate-y);
+  }
   .translate-x-\[450px\] {
     --tw-translate-x: 450px;
     translate: var(--tw-translate-x) var(--tw-translate-y);
@@ -2115,3 +2119,8 @@ html {
 .sizes-properties .overrideSelf.collapsed {
   border: 1px solid var(--color-orange-500);
 }
+
+.selector {
+  font-weight: ;
+}
+  
