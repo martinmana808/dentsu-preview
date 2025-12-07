@@ -5,7 +5,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { SelectedElement } from '../App';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+
 
 type PropertiesPanelProps = {
   isOpen: boolean;
@@ -231,20 +231,8 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
           )}
         </div>
         
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              size="icon" 
-              variant="outline" 
-              className="h-9 w-9 border-dashed bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-200 hover:border-purple-300 hover:text-purple-800 shrink-0"
-            >
-              <Plus className="w-4 h-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Add new range</p>
-          </TooltipContent>
-        </Tooltip>
+        <div className="relative flex flex-col items-center">
+<button data-slot="button" class="[&amp;_svg]:pointer-events-none font-medium text-purple-600 text-xs">Add new</button>        </div>
       </div>
       
       <div className="flex items-center gap-2">
@@ -452,20 +440,9 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
           )}
         </div>
         
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button 
-              size="icon" 
-              variant="outline" 
-              className="h-9 w-9 border-dashed bg-orange-50 border-orange-200 700 hover:bg-orange-200 hover:border-orange-300 hover:text-orange-800 shrink-0"
-            >
-              <Plus className="w-4 h-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Add new size</p>
-          </TooltipContent>
-        </Tooltip>
+        <div className="relative flex flex-col items-center">
+            <button data-slot="button" class="[&amp;_svg]:pointer-events-none font-medium text-orange-500 text-xs">Add new</button>
+        </div>
       </div>
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="sm" onClick={expandAll} className="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">

@@ -36,18 +36,18 @@ export function HierarchyLegend({ isOpen, onClose }: HierarchyLegendProps) {
 
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded bg-blue-100 border border-blue-300" />
-              <span className="text-xs text-gray-700">Range</span>
+              <div className="w-3 h-3 rounded bg-purple-100 border border-purple-300" />
+              <span className="text-xs text-purple-500">Range</span>
             </div>
             <p className="text-xs text-gray-500 ml-5">
-              Values for aspect ratio groups (e.g., tall, wide)
+              Values for groups (e.g., +480px, landscape, etc.)
             </p>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded bg-purple-100 border border-purple-300" />
-              <span className="text-xs text-gray-700">Specific</span>
+              <div className="w-3 h-3 rounded bg-orange-100 border border-orange-300" />
+              <span className="text-xs text-gray-700">Sizes</span>
             </div>
             <p className="text-xs text-gray-500 ml-5">
               Per-size overrides (highest priority)
@@ -56,11 +56,16 @@ export function HierarchyLegend({ isOpen, onClose }: HierarchyLegendProps) {
 
           <div className="pt-2 border-t border-gray-200 space-y-2">
             <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
-              <span className="text-xs text-gray-700">Overridden indicator</span>
+              <span class="overrideCount flex items-center justify-center w-4 h-4 text-[8px] font-medium text-white bg-purple-500 rounded-full">2</span>
+              <span className="text-xs text-gray-700">Overridden indicator (n)</span>
             </div>
             <p className="text-xs text-gray-500 ml-4">
-              Shows when a value differs from the layer above
+              Shows an override done in a higher hierarchy level 
+            </p>
+          </div>
+          <div className="infoPurple p-2 border-t border-gray-200 space-y-2">
+            <p className="text-xs text-gray-500 ml-2">
+              This is an override done by the actual range or size 
             </p>
           </div>
         </div>

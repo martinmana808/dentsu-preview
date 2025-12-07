@@ -12,7 +12,7 @@ import {
   ScanLine,
 } from 'lucide-react';
 import { Button } from './ui/button';
-import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
+
 import { Separator } from './ui/separator';
 import { PanelMode } from '../App';
 
@@ -48,12 +48,11 @@ export function Toolbar({ onGlobalClick, onSpecificClick, onTreeClick, onInfoCli
   return (
     <div className="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 flex flex-col items-center py-2 px-1 gap-1">
         {tools.map((tool, index) => (
-          <Tooltip key={index}>
-            <TooltipTrigger asChild>
+          <div key={index} className="relative flex items-center">
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className={`w-9 h-9 ${
+                className={`peer w-9 h-9 ${
                   tool.mode && activeMode === tool.mode 
                     ? 'bg-blue-100 text-blue-600' 
                     : tool.isActive
@@ -64,41 +63,39 @@ export function Toolbar({ onGlobalClick, onSpecificClick, onTreeClick, onInfoCli
               >
                 <tool.icon className="w-4 h-4 text-gray-700" />
               </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">
-              <p>{tool.label}</p>
-            </TooltipContent>
-          </Tooltip>
+              <span className="customTooltip pointer-events-none opacity-0 peer-hover:opacity-100 transition-opacity absolute right-full mr-2 top-1/2 -translate-y-1/2 z-50 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                {tool.label}
+                <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-px border-4 border-transparent border-l-gray-900"></span>
+              </span>
+          </div>
         ))}
 
         <Separator className="my-1 w-6" />
 
         {actions.map((action, index) => (
-          <Tooltip key={index}>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="w-9 h-9 hover:bg-gray-100">
+          <div key={index} className="relative flex items-center">
+              <Button variant="ghost" size="icon" className="peer w-9 h-9 hover:bg-gray-100">
                 <action.icon className="w-4 h-4 text-gray-700" />
               </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">
-              <p>{action.label}</p>
-            </TooltipContent>
-          </Tooltip>
+              <span className="customTooltip pointer-events-none opacity-0 peer-hover:opacity-100 transition-opacity absolute right-full mr-2 top-1/2 -translate-y-1/2 z-50 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                {action.label}
+                <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-px border-4 border-transparent border-l-gray-900"></span>
+              </span>
+          </div>
         ))}
 
         <Separator className="my-1 w-6" />
 
         {export_tools.map((tool, index) => (
-          <Tooltip key={index}>
-            <TooltipTrigger asChild>
-              <Button variant="ghost" size="icon" className="w-9 h-9 hover:bg-gray-100" onClick={tool.onClick}>
+          <div key={index} className="relative flex items-center">
+              <Button variant="ghost" size="icon" className="peer w-9 h-9 hover:bg-gray-100" onClick={tool.onClick}>
                 <tool.icon className="w-4 h-4 text-gray-700" />
               </Button>
-            </TooltipTrigger>
-            <TooltipContent side="left">
-              <p>{tool.label}</p>
-            </TooltipContent>
-          </Tooltip>
+              <span className="customTooltip pointer-events-none opacity-0 peer-hover:opacity-100 transition-opacity absolute right-full mr-2 top-1/2 -translate-y-1/2 z-50 bg-gray-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
+                {tool.label}
+                 <span className="absolute left-full top-1/2 -translate-y-1/2 -ml-px border-4 border-transparent border-l-gray-900"></span>
+              </span>
+          </div>
         ))}
     </div>
   );
