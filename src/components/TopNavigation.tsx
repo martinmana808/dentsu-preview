@@ -1,6 +1,6 @@
 type TopNavigationProps = {
-  activeTab: 'sizes' | 'global';
-  onTabChange: (tab: 'sizes' | 'global') => void;
+  activeTab: 'Creative' | 'Overrides' | 'Ranges';
+  onTabChange: (tab: 'Creative' | 'Overrides' | 'Ranges') => void;
 };
 
 export function TopNavigation({ activeTab, onTabChange }: TopNavigationProps) {

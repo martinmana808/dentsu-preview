@@ -2151,3 +2151,19 @@ html {
   border: 1px solid var(--color-purple-500);
   border-radius: 8px;
 }
+
+.tableCell, .propertyCell {
+ font-size: 8px; 
+}
+th, td {
+  border: 0;
+  border-right: 1px solid var(--color-gray-300) ;
+  border-bottom: 1px solid var(--color-gray-300) ;
+}
+th:last-child, td:last-child {
+  border-right: none;
+}
+tr:last-child td,
+tr:last-child th {
+  border-bottom: none;
+}

@@ -1,0 +1,9 @@
+property,size,range,override_type,value
+Headline,1200x800,Medium,size,TRUE
+Description,300x600,Tall,range,TRUE
+Cover Image,5000x2000,Super Wide,size,TRUE
+X-Offset,120x120,Tiny,range,TRUE
+Scale,3000x1500,Wide,size,TRUE
+Photo Credits,800x600,Standard,range,TRUE
+Bottom Right Logo,400x300,Small,size,TRUE
+Bottom Left Logo,180x180,Social,range,TRUE

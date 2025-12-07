@@ -1,6 +1,6 @@
 import { TopNavigation } from './components/TopNavigation';
 import { TreeView } from './components/TreeView';
-import { RangeVisualizer } from './components/RangeVisualizer';
+import { OverridesMap, RangesMap } from './components/VisualizerMaps';
 import { HierarchyLegend } from './components/HierarchyLegend';
 import { useState } from 'react';
 import { FormatSelector } from './components/FormatSelector';
@@ -23,7 +23,7 @@ export default function App() {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [panelMode, setPanelMode] = useState<PanelMode>('global');
   const [selectedElement, setSelectedElement] = useState<SelectedElement>(null);
-  const [topNavTab, setTopNavTab] = useState<'sizes' | 'global'>('sizes');
+  const [topNavTab, setTopNavTab] = useState<'Creative' | 'Overrides' | 'Ranges'>('Creative');
   const [isTreeOpen, setIsTreeOpen] = useState(false);
   const [showRangeVisualizer, setShowRangeVisualizer] = useState(true);
   const [isLegendOpen, setIsLegendOpen] = useState(false);
@@ -76,15 +76,15 @@ export default function App() {
 
           {/* Overrides Mode Info Banner */}
           {topNavTab === 'Overrides' && (
-            <div className="absolute top-28 left-1/2 -translate-x-1/2 z-10 w-[600px]">
-              overrides
+            <div className="absolute top-28 left-1/2 -translate-x-1/2 z-10 w-[95%] max-w-[1400px]">
+              <OverridesMap />
             </div>
           )}
           
           {/* Ranges Mode Info Banner */}
           {topNavTab === 'Ranges' && (
-            <div className="absolute top-28 left-1/2 -translate-x-1/2 z-10 w-[600px]">
-              ranges
+            <div className="absolute top-28 left-1/2 -translate-x-1/2 z-10 w-[95%] max-w-[1400px]">
+              <RangesMap />
             </div>
           )}
 
