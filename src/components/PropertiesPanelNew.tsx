@@ -7,8 +7,7 @@ import { Textarea } from './ui/textarea';
 import { SelectedElement } from '../App';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from './ui/tooltip';
-const expandAll = () => setExpandedSections(new Set(ALL_SECTIONS));
-  const collapseAll = () => setExpandedSections(new Set());
+
 type PropertiesPanelProps = {
   isOpen: boolean;
   onClose: () => void;
@@ -39,10 +38,13 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
 
   // Ranges State
   const [selectedRange, setSelectedRange] = useState('Tall');
-  const ranges = ['Tall', 'Wide', 'Square', 'Super Wide'];
+  const ranges = ['< 480px', '480px > 768px', '1000px > 2000px', '200px <'];
 
   // Mock Override State for UI Demo
   const [showApplyToOthers, setShowApplyToOthers] = useState<string | null>(null);
+
+  const expandAll = () => setExpandedSections(new Set(ALL_SECTIONS));
+  const collapseAll = () => setExpandedSections(new Set());
 
   // When an element is clicked, switch to Sizes tab and expand that section
   useEffect(() => {
@@ -94,6 +96,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
         onToggle={() => toggleSection('headline')}
         rangeOverrideCount={2} // Purple bubble
         sizeOverrideCount={1} // Orange bubble
+
       >
         <div className="space-y-2">
           <Label htmlFor="headline-text">Text</Label>
@@ -239,8 +242,9 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
           isExpanded={expandedSections.has('headline')}
           onToggle={() => toggleSection('headline')}
           sizeOverrideCount={1} // Orange bubble
+          extraClass="overrideSelf"
         >
-          <div className="space-y-2">
+          <div className="space-y-2 ">
             <div className=" items-center justify-between">
               <Label htmlFor="range-headline-text">Text</Label>
               <Button 
@@ -249,7 +253,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
                 className="applyToOthers h-6 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                 onClick={() => setShowApplyToOthers(showApplyToOthers === 'range-headline' ? null : 'range-headline')}
               >
-                Apply to others
+                Apply to others 
               </Button>
             </div>
             <Input 
@@ -297,10 +301,20 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
           title="Cover Image"
           isExpanded={expandedSections.has('coverImage')}
           onToggle={() => toggleSection('coverImage')}
+          extraClass="overrideSelf"
         >
           <div className="space-y-2">
             <div className=" items-center gap-2">
               <Label htmlFor="range-scale">Scale</Label>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="applyToOthers h-6 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                onClick={() => setShowApplyToOthers(showApplyToOthers === 'range-headline2' ? null : 'range-headline2')}
+              >
+                Apply to others
+              </Button>
+              
             </div>
             <Input 
               id="range-scale" 
@@ -309,6 +323,18 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
               readOnly 
               className="overrideActive !border-purple-500 ring-1 !ring-purple-500" // Active Override
             />
+            {showApplyToOthers === 'range-headline2' && (
+              <div className="mt-2 p-2 bg-purple-50 rounded border border-blue-100 space-y-2">
+                <div className="text-xs font-medium text-blue-900">Apply override to:</div>
+                {ranges.filter(r => r !== selectedRange).map(range => (
+                  <div key={range} className="flex items-center gap-2">
+                    <input type="checkbox" id={`apply-${range}`} className="rounded border-gray-300 text-blue-600" />
+                    <label htmlFor={`apply-${range}`} className="text-xs text-gray-700">{range}</label>
+                  </div>
+                ))}
+                <Button size="sm" className="w-full h-7 text-xs mt-1">Apply</Button>
+              </div>
+            )}
           </div>
         </PropertySection>
 
@@ -424,7 +450,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
               id="specific-headline-text" 
               value="THE GOAT" 
               readOnly 
-              className="overrideActive !border-orange-500 ring-1 !ring-orange-500" // Active Override
+              className=" !border-orange-500 ring-1 !ring-orange-500" // Active Override
             />
           </div>
         </PropertySection>
@@ -434,18 +460,45 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
           title="Description"
           isExpanded={expandedSections.has('description')}
           onToggle={() => toggleSection('description')}
+          extraClass="overrideSelf"
         >
           <div className="space-y-3">
             <div className="space-y-2">
-              <Label htmlFor="specific-description-text">Text</Label>
+               <div className=" items-center justify-between">
+                <div className=" items-center gap-2">
+                  <Label htmlFor="specific-font-size">Font Size</Label>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className=" applyToOthers h-6 text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                  onClick={() => setShowApplyToOthers(showApplyToOthers === 'size-font2' ? null : 'size-font2')}
+                >
+                  Apply to others
+                </Button>
+              </div>
               <Textarea
                 id="specific-description-text"
                 value="EMMA TWIGG&#10;WORLD CHAMPION - WOMEN'S SOLO&#10;WORLD ROWING BEACH SPRINT FINALS"
                 readOnly
                 rows={3}
                 className="overrideActive !border-orange-500 ring-1 !ring-orange-500" // Active Override
+                extraClass="overrideSelf"
               />
+              {showApplyToOthers === 'size-font2' && (
+                <div className="mt-2 p-2 bg-orange-50 rounded border border-blue-100 space-y-2">
+                  <div className="text-xs font-medium text-blue-900">Apply override to:</div>
+                  {sizes.filter(s => s !== selectedSize).map(size => (
+                    <div key={size} className="flex items-center gap-2">
+                      <input type="checkbox" id={`apply-${size}`} className="rounded border-gray-300 text-blue-600" />
+                      <label htmlFor={`apply-${size}`} className="text-xs text-gray-700">{size}</label>
+                    </div>
+                  ))}
+                  <Button size="sm" className="w-full h-7 text-xs mt-1">Apply</Button>
+                </div>
+              )}
             </div>
+            
             <div className="space-y-2">
               <div className=" items-center justify-between">
                 <div className=" items-center gap-2">
@@ -644,6 +697,7 @@ type PropertySectionProps = {
   isNested?: boolean;
   rangeOverrideCount?: number;
   sizeOverrideCount?: number;
+  extraClass?: string;
 };
 
 function PropertySection({ 
@@ -653,13 +707,16 @@ function PropertySection({
   children, 
   isNested = false, 
   rangeOverrideCount = 0,
-  sizeOverrideCount = 0
+  sizeOverrideCount = 0,
+  extraClass = ""
 }: PropertySectionProps) {
+  const borderOverride = isExpanded ? "expanded" : "collapsed";
+
   return (
-    <div className={`border border-gray-200 rounded-lg overflow-hidden ${isNested ? 'bg-gray-50/50' : ''}`}>
+    <div className={`${extraClass} ${borderOverride} form-field border border-gray-200 rounded-lg overflow-hidden ${isNested ? 'bg-gray-50/50' : ''}`}>
       <button
         onClick={onToggle}
-        className={`w-full flex items-center justify-between p-3 transition-colors ${
+        className={` w-full flex items-center justify-between p-3 transition-colors ${
           isNested ? 'hover:bg-white' : 'hover:bg-gray-50 bg-gray-50/30'
         }`}
       >
