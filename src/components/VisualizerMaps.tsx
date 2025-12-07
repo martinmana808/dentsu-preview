@@ -187,27 +187,61 @@ export function OverridesMap() {
                              const rangeOverride = overrides.find(o => o.type === 'range' && o.sizes.includes(size));
                              const sizeOverride = overrides.find(o => o.type === 'size' && o.sizes.includes(size));
 
-                             // Determine cell styles
-                             // Visual hierarchy: Range strips (purple) are behind. Size circles (orange) are on top.
-                             // Implementing strip: If adjacent cells are in the same range, we connect them visually?
-                             // The prompt says "Draw a horizontal strip".
-                             // We can just color the cell background purple for range items.
-                             
+                             const prevSize = colIndex > 0 ? SIZES[colIndex - 1] : null;
+                             const nextSize = colIndex < SIZES.length - 1 ? SIZES[colIndex + 1] : null;
+
+                             const isStart = rangeOverride && (!prevSize || !rangeOverride.sizes.includes(prevSize));
+                             const isEnd = rangeOverride && (!nextSize || !rangeOverride.sizes.includes(nextSize));
+
+                             // Styles for the range strip
+                             let rangeStyle: React.CSSProperties = {};
+                             if (rangeOverride) {
+                                rangeStyle = {
+                                    position: 'absolute',
+                                    height: '1rem', // h-4
+                                    backgroundColor: '#a855f7', // purple-500
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    zIndex: 10,
+                                };
+
+                                if (isStart && isEnd) {
+                                    // Single cell range (if any)
+                                    rangeStyle.left = '50%';
+                                    rangeStyle.right = '50%';
+                                    rangeStyle.width = '10px'; // Minimal width for visibility? Or 0?
+                                    rangeStyle.marginLeft = '-5px'; // Center it
+                                    rangeStyle.borderRadius = '100rem';
+                                } else if (isStart) {
+                                    rangeStyle.left = 'calc(50% - 8px)';
+                                    rangeStyle.right = '-1px'; // Connect to right
+                                    rangeStyle.borderTopLeftRadius = '100rem';
+                                    rangeStyle.borderBottomLeftRadius = '100rem';
+                                } else if (isEnd) {
+                                    rangeStyle.left = '-1px'; // Connect to left
+                                    rangeStyle.right = 'calc(50% - 8px)';
+                                    rangeStyle.borderTopRightRadius = '100rem';
+                                    rangeStyle.borderBottomRightRadius = '100rem';
+                                } else {
+                                    // Middle
+                                    rangeStyle.left = '0';
+                                    rangeStyle.right = '0';
+                                    rangeStyle.marginInline = '-1px';
+                                }
+                             }
+
                              return (
                                  <td key={size} className="">
-                                     {/* Container for absolute positioning */}
                                      <div className="w-full h-full flex items-center justify-center relative">
                                         
-                                        {/* Range Strip (Background) */}
+                                        {/* Range Strip */}
                                         {rangeOverride && (
-                                            <div className="absolute inset-0 bg-purple-500/20 flex items-center justify-center">
-                                                <div className="w-full h-4 bg-purple-500 absolute z-10" />
-                                            </div>
+                                            <div style={rangeStyle} />
                                         )}
 
                                         {/* Size Override (Circle) */}
                                         {sizeOverride && (
-                                            <div className="w-4 h-4 bg-orange-500 rounded-full z-10 shadow-sm" title="Size Override" />
+                                            <div className="w-4 h-4 bg-orange-500 rounded-full z-20 shadow-sm" title="Size Override" />
                                         )}
                                      </div>
                                  </td>
@@ -245,13 +279,53 @@ export function RangesMap() {
                              const overrides = OVERRIDES_DATA[prop] || [];
                              const rangeOverride = overrides.find(o => o.type === 'range' && o.sizes.includes(size));
                              
+                             const prevSize = colIndex > 0 ? SIZES[colIndex - 1] : null;
+                             const nextSize = colIndex < SIZES.length - 1 ? SIZES[colIndex + 1] : null;
+
+                             const isStart = rangeOverride && (!prevSize || !rangeOverride.sizes.includes(prevSize));
+                             const isEnd = rangeOverride && (!nextSize || !rangeOverride.sizes.includes(nextSize));
+
+                             // Styles for the range strip
+                             let rangeStyle: React.CSSProperties = {};
+                             if (rangeOverride) {
+                                rangeStyle = {
+                                    position: 'absolute',
+                                    height: '1rem', // h-4
+                                    backgroundColor: '#a855f7', // purple-500
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    zIndex: 10,
+                                };
+
+                                if (isStart && isEnd) {
+                                    rangeStyle.left = '50%';
+                                    rangeStyle.right = '50%';
+                                    rangeStyle.width = '10px';
+                                    rangeStyle.marginLeft = '-5px';
+                                    rangeStyle.borderRadius = '100rem';
+                                } else if (isStart) {
+                                    rangeStyle.left = '50%';
+                                    rangeStyle.right = '-1px';
+                                    rangeStyle.borderTopLeftRadius = '100rem';
+                                    rangeStyle.borderBottomLeftRadius = '100rem';
+                                } else if (isEnd) {
+                                    rangeStyle.left = '-1px';
+                                    rangeStyle.right = '50%';
+                                    rangeStyle.borderTopRightRadius = '100rem';
+                                    rangeStyle.borderBottomRightRadius = '100rem';
+                                } else {
+                                    // Middle
+                                    rangeStyle.left = '0';
+                                    rangeStyle.right = '0';
+                                    rangeStyle.marginInline = '-1px';
+                                }
+                             }
+                             
                              return (
                                  <td key={size} className="">
                                      <div className="w-full h-full flex items-center justify-center relative">
                                         {rangeOverride && (
-                                            <div className="absolute inset-0 bg-purple-500/10 flex items-center justify-center">
-                                                <div className="w-full h-4 bg-purple-500 absolute z-10" />
-                                            </div>
+                                            <div style={rangeStyle} />
                                         )}
                                      </div>
                                  </td>
