@@ -147,32 +147,83 @@ const OVERRIDES_DATA: Record<string, Array<{ type: 'size' | 'range', sizes: stri
 };
 
 const BaseMapTable = ({ children }: { children: React.ReactNode }) => {
+    const containerRef = React.useRef<HTMLDivElement>(null);
+    const tableRef = React.useRef<HTMLTableElement>(null);
+    const [scale, setScale] = React.useState(1);
+    const [containerHeight, setContainerHeight] = React.useState('auto');
+
+    React.useEffect(() => {
+        const calculateScale = () => {
+            if (containerRef.current && tableRef.current) {
+                const containerWidth = containerRef.current.offsetWidth;
+                const tableWidth = tableRef.current.scrollWidth;
+                const tableHeight = tableRef.current.scrollHeight;
+                
+                // If table is wider than container, scale down
+                // If table is narrower, distinct requirement wasn't set, but "always be width" implies fitting. 
+                // Let's assume we want to FIT (scale up or down).
+                const newScale = containerWidth / tableWidth;
+                
+                setScale(newScale);
+                setContainerHeight(`${tableHeight * newScale}px`);
+            }
+        };
+
+        // Initial calc
+        calculateScale();
+
+        // Observer
+        const observer = new ResizeObserver(() => {
+            calculateScale();
+        });
+
+        if (containerRef.current) {
+            observer.observe(containerRef.current);
+        }
+
+        // Also listen to window resize as a backup/trigger
+        window.addEventListener('resize', calculateScale);
+
+        return () => {
+             observer.disconnect();
+             window.removeEventListener('resize', calculateScale);
+        };
+    }, [children]); // Recalculate if children change (content changes)
+
     return (
-        <div className="w-full h-full overflow-auto  rounded-md shadow-sm">
-             <table className="w-max border-collapse text-sm">
-                <thead>
-                    <tr className="bg-gray-50 border-b border-gray-200">
-                        <th className="sticky left-0 z-20 bg-gray-50 p-2 font-medium text-gray-700 text-left w-48 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
-                             Properties
-                        </th>
-                        {SIZES.map(size => (
-                            <th key={size} className="tableCell p-2 font-medium text-gray-600  border-gray-300 min-w-[100px] text-center whitespace-nowrap">
-                                {size}
+        <div ref={containerRef} className="w-full relative origin-top-left" style={{ height: containerHeight }}>
+             <div 
+                style={{ 
+                    transform: `scale(${scale})`, 
+                    transformOrigin: 'top left',
+                    width: 'max-content' // Ensure table takes full natural width for calculation
+                }}
+             >
+                 <table ref={tableRef} className="w-max border-collapse text-sm">
+                    <thead>
+                        <tr className="bg-gray-50 border-b border-gray-200">
+                            <th className="sticky left-0 z-20 bg-gray-50 p-2 font-medium text-gray-700 text-left w-48 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
+                                 Properties
                             </th>
-                        ))}
-                    </tr>
-                </thead>
-                <tbody>
-                    {children}
-                </tbody>
-             </table>
+                            {SIZES.map(size => (
+                                <th key={size} className="tableCell p-2 font-medium text-gray-600  border-gray-300 min-w-[100px] text-center whitespace-nowrap">
+                                    {size}
+                                </th>
+                            ))}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {children}
+                    </tbody>
+                 </table>
+             </div>
         </div>
     );
 };
 
 export function OverridesMap() {
     return (
-        <div className=" rounded-lg    p-6 w-full overflow-y-auto max-h-[80vh]">
+        <div className=" rounded-lg    p-6 w-full">
             <BaseMapTable>
                 {PROPERTIES.map((prop, rowIndex) => (
                     <tr key={prop} className=" border-gray-100 hover:bg-gray-50/30 transition-colors">
@@ -268,7 +319,7 @@ export function RangesMap() {
      // I will stick to showing the exact same grid as Overrides Map, but ONLY visualizing the purple strips.
      
     return (
-        <div className=" rounded-lg    p-6 w-full overflow-y-auto max-h-[80vh]">
+        <div className=" rounded-lg    p-6 w-full">
              <BaseMapTable>
                 {PROPERTIES.map((prop, rowIndex) => (
                     <tr key={prop} className=" border-gray-100 hover:bg-gray-50/30 transition-colors">

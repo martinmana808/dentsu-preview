@@ -76,14 +76,14 @@ export default function App() {
 
           {/* Overrides Mode Info Banner */}
           {topNavTab === 'Overrides' && (
-            <div className="absolute top-28 left-1/2 -translate-x-1/2 z-10 w-[95%] max-w-[1400px]">
+            <div className="absolute top-28 left-1/2 -translate-x-1/2 z-10" style={{ width: 'calc(100vw - 200px)' }}>
               <OverridesMap />
             </div>
           )}
           
           {/* Ranges Mode Info Banner */}
           {topNavTab === 'Ranges' && (
-            <div className="absolute top-28 left-1/2 -translate-x-1/2 z-10 w-[95%] max-w-[1400px]">
+            <div className="absolute top-28 left-1/2 -translate-x-1/2 z-10" style={{ width: 'calc(100vw - 200px)' }}>
               <RangesMap />
             </div>
           )}
