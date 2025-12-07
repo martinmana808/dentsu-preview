@@ -1,0 +1,3 @@
+- Global, Range, Size: They should have a Expand all/ collapse all a the top. 
+- Range selector dropdwon and Size selector dropdown should be on top of everything (z-index) and have a solid background and take 100% their parent's width. 
+- Range selector trigger should be purple. Add range button should be purple. 
