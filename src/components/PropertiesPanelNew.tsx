@@ -11,9 +11,11 @@ type PropertiesPanelProps = {
   isOpen: boolean;
   onClose: () => void;
   selectedElement: SelectedElement;
+  activeTab: PropertyTab;
+  onTabChange: (tab: PropertyTab) => void;
 };
 
-type PropertyTab = 'global' | 'ranges' | 'sizes';
+export type PropertyTab = 'global' | 'ranges' | 'sizes';
 
 const ALL_SECTIONS = [
   'headline', 
@@ -25,8 +27,8 @@ const ALL_SECTIONS = [
   'fontColour'
 ];
 
-export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: PropertiesPanelProps) {
-  const [activeTab, setActiveTab] = useState<PropertyTab>('global');
+export function PropertiesPanelNew({ isOpen, onClose, selectedElement, activeTab, onTabChange }: PropertiesPanelProps) {
+  // const [activeTab, setActiveTab] = useState<PropertyTab>('global'); // Lifted to App
   const [expandedSections, setExpandedSections] = useState<Set<string>>(
     new Set(['headline', 'description', 'coverImage'])
   );
@@ -52,7 +54,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
   // When an element is clicked, switch to Sizes tab and expand that section
   useEffect(() => {
     if (selectedElement) {
-      setActiveTab('sizes');
+      onTabChange('sizes');
       const elementMap: Record<string, string> = {
         headline: 'headline',
         description: 'description',
@@ -99,7 +101,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
         onToggle={() => toggleSection('headline')}
         rangeOverrideCount={2} // Purple bubble
         sizeOverrideCount={1} // Orange bubble
-
+        onTabChange={onTabChange}
       >
         <div className="space-y-2">
           <Label htmlFor="headline-text">Text</Label>
@@ -113,6 +115,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
         isExpanded={expandedSections.has('description')}
         onToggle={() => toggleSection('description')}
         sizeOverrideCount={3} // Orange bubble
+        onTabChange={onTabChange}
       >
         <div className="space-y-2">
           <Label htmlFor="description-text">Text</Label>
@@ -131,6 +134,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
         isExpanded={expandedSections.has('coverImage')}
         onToggle={() => toggleSection('coverImage')}
         rangeOverrideCount={1} // Purple bubble
+        onTabChange={onTabChange}
       >
         <div className="space-y-2">
           <Label htmlFor="cover-image">Image</Label>
@@ -180,6 +184,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
         isExpanded={expandedSections.has('fontColour')}
         onToggle={() => toggleSection('fontColour')}
         rangeOverrideCount={1} // Purple bubble
+        onTabChange={onTabChange}
       >
         <div className="space-y-2">
           <Label htmlFor="font-colour">Colour</Label>
@@ -409,7 +414,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
 
   const renderSizesProperties = () => (
     <div className="space-y-4 sizes-properties">
-      <label data-slot="label" class="flex items-center gap-2  leading-none text-gray-500 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 my-2 text-sm text-gray-900 mb-3" for="specific-headline-text ">Select Size</label>
+      <label data-slot="label" className="flex items-center gap-2  leading-none text-gray-500 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 my-2 text-sm text-gray-900 mb-3" htmlFor="specific-headline-text ">Select Size</label>
         {/* Size Selector */}
       <div className="flex items-center gap-2 relative z-40">
         <div className="flex-1 relative">
@@ -441,7 +446,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
         </div>
         
         <div className="relative flex flex-col items-center">
-            <button data-slot="button" class="[&amp;_svg]:pointer-events-none font-medium text-orange-500 text-xs">Add new</button>
+            <button data-slot="button" className="[&_svg]:pointer-events-none font-medium text-orange-500 text-xs">Add new</button>
         </div>
       </div>
       <div className="flex items-center gap-2">
@@ -460,6 +465,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
           isExpanded={expandedSections.has('headline')}
           onToggle={() => toggleSection('headline')}
           extraClass="overrideSelf"
+          onTabChange={onTabChange}
         >
           <div className="space-y-2 ">
             <div className=" items-center justify-between">
@@ -501,6 +507,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
           isExpanded={expandedSections.has('description')}
           onToggle={() => toggleSection('description')}
           extraClass="overrideSelf"
+          onTabChange={onTabChange}
         >
           <div className="space-y-3">
             <div className="space-y-2">
@@ -523,7 +530,6 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
                 readOnly
                 rows={3}
                 className="overrideActive !border-orange-500 ring-1 !ring-orange-500" // Active Override
-                extraClass="overrideSelf"
               />
               {showApplyToOthers === 'size-font2' && (
                 <div className="mt-2 p-2 bg-orange-50 rounded border border-blue-100 space-y-2">
@@ -687,7 +693,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
         {/* Tabs */}
         <div className="flex border-b border-gray-200 bg-gray-50/30">
           <button
-            onClick={() => setActiveTab('global')}
+            onClick={() => onTabChange('global')}
             className={`flex-1 px-4 py-2.5 text-sm transition-all ${
               activeTab === 'global'
                 ? 'bg-white text-gray-900 border-b-2 border-blue-500'
@@ -697,7 +703,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
             Global
           </button>
           <button
-            onClick={() => setActiveTab('ranges')}
+            onClick={() => onTabChange('ranges')}
             className={`flex-1 px-4 py-2.5 text-sm transition-all ${
               activeTab === 'ranges'
                 ? 'bg-white text-gray-900 border-b-2 border-blue-500'
@@ -707,7 +713,7 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement }: Propert
             Ranges
           </button>
           <button
-            onClick={() => setActiveTab('sizes')}
+            onClick={() => onTabChange('sizes')}
             className={`flex-1 px-4 py-2.5 text-sm transition-all ${
               activeTab === 'sizes'
                 ? 'bg-white text-gray-900 border-b-2 border-blue-500'
@@ -738,6 +744,7 @@ type PropertySectionProps = {
   rangeOverrideCount?: number;
   sizeOverrideCount?: number;
   extraClass?: string;
+  onTabChange?: (tab: PropertyTab) => void;
 };
 
 function PropertySection({ 
@@ -748,7 +755,8 @@ function PropertySection({
   isNested = false, 
   rangeOverrideCount = 0,
   sizeOverrideCount = 0,
-  extraClass = ""
+  extraClass = "",
+  onTabChange
 }: PropertySectionProps) {
   const borderOverride = isExpanded ? "expanded" : "collapsed";
 
@@ -766,14 +774,26 @@ function PropertySection({
           <span className={`text-sm ${isNested ? 'text-gray-800' : 'text-gray-900'}`}>{title}</span>
           {/* Indicators */}
           {rangeOverrideCount > 0 && (
-            <span className="overrideCount flex items-center justify-center w-4 h-4 text-[8px] font-medium text-white bg-purple-500 rounded-full">
+            <div 
+              onClick={(e) => {
+                e.stopPropagation();
+                onTabChange?.('ranges');
+              }}
+              className="overrideCount flex items-center justify-center w-4 h-4 text-[8px] font-medium text-white bg-purple-500 rounded-full hover:scale-110 transition-transform cursor-pointer"
+            >
               {rangeOverrideCount}
-            </span>
+            </div>
           )}
           {sizeOverrideCount > 0 && (
-            <span className="overrideCount flex items-center justify-center w-4 h-4 text-[8px] font-medium text-white bg-orange-500 rounded-full">
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                onTabChange?.('sizes');
+              }}
+              className="overrideCount flex items-center justify-center w-4 h-4 text-[8px] font-medium text-white bg-orange-500 rounded-full hover:scale-110 transition-transform cursor-pointer"
+            >
               {sizeOverrideCount}
-            </span>
+            </div>
           )}
         </div>
         {isExpanded ? (
@@ -790,5 +810,3 @@ function PropertySection({
     </div>
   );
 }
-
-

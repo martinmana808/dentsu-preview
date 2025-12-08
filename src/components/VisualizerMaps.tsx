@@ -168,6 +168,10 @@ function getAspectRatio(sizeStr: string): string {
     return `${width / divisor}:${height / divisor}`;
 }
 
+type MapProps = {
+    onNavigate?: (tab: 'ranges' | 'sizes') => void;
+};
+
 const BaseMapTable = ({ children, rowHeaderLabel = "Properties" }: { children: React.ReactNode, rowHeaderLabel?: string }) => {
     const containerRef = React.useRef<HTMLDivElement>(null);
     const tableRef = React.useRef<HTMLTableElement>(null);
@@ -268,7 +272,7 @@ const BaseMapTable = ({ children, rowHeaderLabel = "Properties" }: { children: R
     );
 };
 
-export function OverridesMap() {
+export function OverridesMap({ onNavigate }: MapProps) {
     return (
         <div className=" rounded-lg    p-6 w-full">
             <BaseMapTable>
@@ -334,12 +338,20 @@ export function OverridesMap() {
                                         
                                         {/* Range Strip */}
                                         {rangeOverride && (
-                                            <div style={rangeStyle} />
+                                            <button 
+                                                onClick={() => onNavigate?.('ranges')}
+                                                className="absolute inset-0 cursor-pointer hover:bg-purple-500/10 transition-colors"
+                                                style={rangeStyle}
+                                            />
                                         )}
 
                                         {/* Size Override (Circle) */}
                                         {sizeOverride && (
-                                            <div className="w-4 h-4 bg-orange-500 rounded-full z-20 shadow-sm" title="Size Override" />
+                                            <button 
+                                                onClick={() => onNavigate?.('sizes')}
+                                                className="w-4 h-4 bg-orange-500 rounded-full z-20 shadow-sm cursor-pointer hover:scale-125 transition-transform" 
+                                                title="Size Override" 
+                                            />
                                         )}
                                      </div>
                                  </td>
@@ -352,7 +364,7 @@ export function OverridesMap() {
     );
 }
 
-export function RangesMap() {
+export function RangesMap({ onNavigate }: MapProps) {
     return (
         <div className=" rounded-lg    p-6 w-full">
              <BaseMapTable rowHeaderLabel="Ranges">
@@ -411,7 +423,11 @@ export function RangesMap() {
                                  <td key={size} className="">
                                      <div className="w-full h-full flex items-center justify-center relative">
                                         {isInRange && (
-                                            <div style={rangeStyle} />
+                                            <button 
+                                                onClick={() => onNavigate?.('ranges')}
+                                                className="absolute inset-0 cursor-pointer hover:bg-purple-500/10 transition-colors"
+                                                style={rangeStyle}
+                                            />
                                         )}
                                      </div>
                                  </td>

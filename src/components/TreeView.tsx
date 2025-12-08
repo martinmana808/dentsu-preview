@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 type TreeViewProps = {
   isOpen: boolean;
   onClose: () => void;
+  onNavigate?: (tab: 'ranges' | 'sizes') => void;
 };
 
 type PropertyOrigin = 'global' | 'range' | 'size';
@@ -74,7 +75,7 @@ type TreeElement = {
     },
   ];
 
-export function TreeView({ isOpen, onClose }: TreeViewProps) {
+export function TreeView({ isOpen, onClose, onNavigate }: TreeViewProps) {
   const [expandedElements, setExpandedElements] = useState<Set<string>>(
     new Set(['Headline', 'Description', 'Cover Image'])
   );
@@ -164,13 +165,18 @@ export function TreeView({ isOpen, onClose }: TreeViewProps) {
           )}
           <span className="relative text-xs text-gray-700">{property.name}</span>
         </div>
-        <span
-          className={`text-xs px-2 py-0.5 rounded-full ${getOriginColor(
+        <button
+          className={`overrideCount text-xs px-2 py-0.5 rounded-full ${getOriginColor(
             property.origin
           )}`}
+          onClick={(e) => {
+             e.stopPropagation();
+             if (property.origin === 'range') onNavigate?.('ranges');
+             if (property.origin === 'size') onNavigate?.('sizes');
+          }}
         >
           {getOriginLabel(property.origin)}
-        </span>
+        </button>
       </div>
     );
   };

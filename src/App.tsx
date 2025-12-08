@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { FormatSelector } from './components/FormatSelector';
 import { AdCanvas } from './components/AdCanvas';
 import { Toolbar } from './components/Toolbar';
-import { PropertiesPanelNew } from './components/PropertiesPanelNew';
+import { PropertiesPanelNew, PropertyTab } from './components/PropertiesPanelNew';
 import { TooltipProvider } from './components/ui/tooltip';
 
 export type AdFormat = {
@@ -27,6 +27,12 @@ export default function App() {
   const [isTreeOpen, setIsTreeOpen] = useState(false);
   const [showRangeVisualizer, setShowRangeVisualizer] = useState(true);
   const [isLegendOpen, setIsLegendOpen] = useState(false);
+  const [activePanelTab, setActivePanelTab] = useState<PropertyTab>('global');
+
+  const openPanelTab = (tab: PropertyTab) => {
+      setActivePanelTab(tab);
+      setIsPanelOpen(true);
+  };
 
   const handleGlobalClick = () => {
     setPanelMode('global');
@@ -77,14 +83,14 @@ export default function App() {
           {/* Overrides Mode Info Banner */}
           {topNavTab === 'Overrides' && (
             <div className="absolute top-28 left-1/2 -translate-x-1/2 z-10" style={{ width: 'calc(100vw - 200px)' }}>
-              <OverridesMap />
+              <OverridesMap onNavigate={openPanelTab} />
             </div>
           )}
           
           {/* Ranges Mode Info Banner */}
           {topNavTab === 'Ranges' && (
             <div className="absolute top-28 left-1/2 -translate-x-1/2 z-10" style={{ width: 'calc(100vw - 200px)' }}>
-              <RangesMap />
+              <RangesMap onNavigate={openPanelTab} />
             </div>
           )}
 
@@ -101,13 +107,15 @@ export default function App() {
           </div>
 
           {/* Tree View - Left Side */}
-          <TreeView isOpen={isTreeOpen} onClose={() => setIsTreeOpen(false)} />
+          <TreeView isOpen={isTreeOpen} onClose={() => setIsTreeOpen(false)} onNavigate={openPanelTab} />
 
           {/* Properties Panel - Right Side */}
           <PropertiesPanelNew
             isOpen={isPanelOpen}
             onClose={() => setIsPanelOpen(false)}
             selectedElement={selectedElement}
+            activeTab={activePanelTab}
+            onTabChange={setActivePanelTab}
           />
 
           {/* Hierarchy Legend - Right Side */}
