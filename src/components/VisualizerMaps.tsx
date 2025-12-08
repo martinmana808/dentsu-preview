@@ -146,11 +146,34 @@ const OVERRIDES_DATA: Record<string, Array<{ type: 'size' | 'range', sizes: stri
   ]
 };
 
-const BaseMapTable = ({ children }: { children: React.ReactNode }) => {
+
+const MOCK_RANGES = [
+    { name: '>480 - 1200', sizes: ['2400×800', '5000×2000', '3000×1500', '4000×2500'] },
+    { name: '1201 - 6000', sizes: ['1200×800', '800×600', '400×300'] },
+    { name: '801 - 1200', sizes: ['120×120', '180×180', '1080×1080', '900×900', '480×480'] },
+    { name: '>6001', sizes: ['1400×2000', '600×900', '1200×1800'] },
+];
+
+function gcd(a: number, b: number): number {
+    return b === 0 ? a : gcd(b, a % b);
+}
+
+function getAspectRatio(sizeStr: string): string {
+    const parts = sizeStr.split('×');
+    if (parts.length !== 2) return sizeStr;
+    const width = parseInt(parts[0], 10);
+    const height = parseInt(parts[1], 10);
+    if (isNaN(width) || isNaN(height)) return sizeStr;
+    const divisor = gcd(width, height);
+    return `${width / divisor}:${height / divisor}`;
+}
+
+const BaseMapTable = ({ children, rowHeaderLabel = "Properties" }: { children: React.ReactNode, rowHeaderLabel?: string }) => {
     const containerRef = React.useRef<HTMLDivElement>(null);
     const tableRef = React.useRef<HTMLTableElement>(null);
     const [scale, setScale] = React.useState(1);
     const [containerHeight, setContainerHeight] = React.useState('auto');
+    const [showAspectRatio, setShowAspectRatio] = React.useState(false);
 
     React.useEffect(() => {
         const calculateScale = () => {
@@ -170,7 +193,8 @@ const BaseMapTable = ({ children }: { children: React.ReactNode }) => {
         };
 
         // Initial calc
-        calculateScale();
+        // We need a slight delay to ensure the table has re-rendered with new headers if toggled
+        setTimeout(calculateScale, 0);
 
         // Observer
         const observer = new ResizeObserver(() => {
@@ -188,10 +212,26 @@ const BaseMapTable = ({ children }: { children: React.ReactNode }) => {
              observer.disconnect();
              window.removeEventListener('resize', calculateScale);
         };
-    }, [children]); // Recalculate if children change (content changes)
+    }, [children, showAspectRatio]); // Recalculate if children or view mode changes
 
     return (
         <div ref={containerRef} className="w-full relative origin-top-left" style={{ height: containerHeight }}>
+             {/* Aspect Ratio Toggle - Positioned absolutely within the container but independent of scale? 
+                 Actually, if we put it inside, it will be scaled. 
+                 If we want it 'somewhere', maybe fixed? 
+                 Let's put it on top-right of the container, NOT scaled. 
+                 Wait, if container has overflow: hidden (implied by resizing logic?), absolute might be cut off.
+                 But we removed overflow-auto.
+             */}
+             <div className="togglePixelRatio absolute top-[-3rem] z-50">
+                 <button 
+                    onClick={() => setShowAspectRatio(!showAspectRatio)}
+                    className="bg-gray-100 border border-gray-300 hover:bg-accent hover:bg-blue-500/10 hover:bg-green-500/10 px-5 py-1.5 rounded-full text-xs transition-all"
+                 >
+                    {showAspectRatio ? "Show Pixel Sizes" : "Display Aspect Ratios"}
+                 </button>
+             </div>
+
              <div 
                 style={{ 
                     transform: `scale(${scale})`, 
@@ -203,11 +243,18 @@ const BaseMapTable = ({ children }: { children: React.ReactNode }) => {
                     <thead>
                         <tr className="bg-gray-50 border-b border-gray-200">
                             <th className="sticky left-0 z-20 bg-gray-50 p-2 font-medium text-gray-700 text-left w-48 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">
-                                 Properties
+                                 {rowHeaderLabel}
                             </th>
                             {SIZES.map(size => (
-                                <th key={size} className="tableCell p-2 font-medium text-gray-600  border-gray-300 min-w-[100px] text-center whitespace-nowrap">
-                                    {size}
+                                <th key={size} className="relative tableCell p-2 font-medium text-gray-600  border-gray-300 min-w-[100px] text-center whitespace-nowrap">
+                                    <div className=" grid place-items-center">
+                                        <span className={`col-start-1 row-start-1 transition-opacity duration-300 ${showAspectRatio ? 'opacity-0' : 'opacity-100'}`}>
+                                            {size}
+                                        </span>
+                                        <span className={`sizesRatios col-start-1 row-start-1 transition-opacity duration-300 ${showAspectRatio ? 'opacity-100' : 'opacity-0'}`}>
+                                            {getAspectRatio(size)}
+                                        </span>
+                                    </div>
                                 </th>
                             ))}
                         </tr>
@@ -306,39 +353,27 @@ export function OverridesMap() {
 }
 
 export function RangesMap() {
-     // User said to use "Ignore the CSV." "use the information from this html".
-     // HTML shows NO separate Ranges data.
-     // But previous request said "Ranges Map ... only shows ranges that exist." "One strip per range."
-     // I will reproduce the Overrides Map structure but ONLY showing the purple strips (Ranges).
-     // Ideally, Ranges Map rows should be RANGES (as per logical structure), but if user wants "Based on the same Base Map",
-     // and wants to use the HTML info which places ranges on PROPERTY rows... 
-     // I will replicate the Overrides Map but hide the orange circles. This shows "where ranges apply".
-     // BUT, the HTML shows "Cover Image X-Offset" has a range.
-     // Is the range named "Cover Image X-Offset"? No, that's the property.
-     // The "Range" concept seems to be: A set of sizes grouped together.
-     // I will stick to showing the exact same grid as Overrides Map, but ONLY visualizing the purple strips.
-     
     return (
         <div className=" rounded-lg    p-6 w-full">
-             <BaseMapTable>
-                {PROPERTIES.map((prop, rowIndex) => (
-                    <tr key={prop} className=" border-gray-100 hover:bg-gray-50/30 transition-colors">
+             <BaseMapTable rowHeaderLabel="Ranges">
+                {MOCK_RANGES.map((range, rowIndex) => (
+                    <tr key={`${range.name}-${rowIndex}`} className=" border-gray-100 hover:bg-gray-50/30 transition-colors">
                         <td className="propertyCell sticky left-0 z-10  p-3 font-medium text-gray-800 border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] whitespace-nowrap">
-                            {prop}
+                            {range.name}
                         </td>
                         {SIZES.map((size, colIndex) => {
-                             const overrides = OVERRIDES_DATA[prop] || [];
-                             const rangeOverride = overrides.find(o => o.type === 'range' && o.sizes.includes(size));
+                             // Check if THIS specific flattened range includes this size
+                             const isInRange = range.sizes.includes(size);
                              
                              const prevSize = colIndex > 0 ? SIZES[colIndex - 1] : null;
                              const nextSize = colIndex < SIZES.length - 1 ? SIZES[colIndex + 1] : null;
 
-                             const isStart = rangeOverride && (!prevSize || !rangeOverride.sizes.includes(prevSize));
-                             const isEnd = rangeOverride && (!nextSize || !rangeOverride.sizes.includes(nextSize));
+                             const isStart = isInRange && (!prevSize || !range.sizes.includes(prevSize));
+                             const isEnd = isInRange && (!nextSize || !range.sizes.includes(nextSize));
 
                              // Styles for the range strip
                              let rangeStyle: React.CSSProperties = {};
-                             if (rangeOverride) {
+                             if (isInRange) {
                                 rangeStyle = {
                                     position: 'absolute',
                                     height: '1rem', // h-4
@@ -355,13 +390,13 @@ export function RangesMap() {
                                     rangeStyle.marginLeft = '-5px';
                                     rangeStyle.borderRadius = '100rem';
                                 } else if (isStart) {
-                                    rangeStyle.left = '50%';
+                                    rangeStyle.left = 'calc(50% - 8px)';
                                     rangeStyle.right = '-1px';
                                     rangeStyle.borderTopLeftRadius = '100rem';
                                     rangeStyle.borderBottomLeftRadius = '100rem';
                                 } else if (isEnd) {
                                     rangeStyle.left = '-1px';
-                                    rangeStyle.right = '50%';
+                                    rangeStyle.right = 'calc(50% - 8px)';
                                     rangeStyle.borderTopRightRadius = '100rem';
                                     rangeStyle.borderBottomRightRadius = '100rem';
                                 } else {
@@ -375,7 +410,7 @@ export function RangesMap() {
                              return (
                                  <td key={size} className="">
                                      <div className="w-full h-full flex items-center justify-center relative">
-                                        {rangeOverride && (
+                                        {isInRange && (
                                             <div style={rangeStyle} />
                                         )}
                                      </div>

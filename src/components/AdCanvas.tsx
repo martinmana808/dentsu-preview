@@ -10,7 +10,7 @@ type AdCanvasProps = {
 export function AdCanvas({ format, onElementClick }: AdCanvasProps) {
   return (
     <div
-      className="relative shadow-2xl overflow-hidden"
+      className="creative relative shadow-2xl overflow-hidden"
       style={{
         width: `${format.width}px`,
         height: `${format.height}px`,

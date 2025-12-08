@@ -7,12 +7,13 @@ type TreeViewProps = {
   onClose: () => void;
 };
 
-type PropertyOrigin = 'global' | 'range' | 'specific';
+type PropertyOrigin = 'global' | 'range' | 'size';
 
 type TreeProperty = {
   name: string;
   origin: PropertyOrigin;
   isOverridden: boolean;
+  children?: TreeProperty[];
 };
 
 type TreeElement = {
@@ -26,21 +27,30 @@ type TreeElement = {
       properties: [
         { name: 'Text', origin: 'global', isOverridden: false },
         { name: 'Font Color', origin: 'range', isOverridden: true },
+        {
+          name: 'Credits',
+          origin: 'global',
+          isOverridden: false,
+          children: [
+            { name: 'copyright', origin: 'global', isOverridden: false },
+            { name: 'legal text', origin: 'global', isOverridden: false },
+          ],
+        },
       ],
     },
     {
       name: 'Description',
       properties: [
         { name: 'Text', origin: 'global', isOverridden: false },
-        { name: 'Font Size', origin: 'specific', isOverridden: true },
+        { name: 'Font Size', origin: 'size', isOverridden: true },
       ],
     },
     {
       name: 'Cover Image',
       properties: [
         { name: 'Image', origin: 'global', isOverridden: false },
-        { name: 'X-Offset', origin: 'specific', isOverridden: true },
-        { name: 'Y-Offset', origin: 'specific', isOverridden: true },
+        { name: 'X-Offset', origin: 'size', isOverridden: true },
+        { name: 'Y-Offset', origin: 'size', isOverridden: true },
         { name: 'Scale', origin: 'range', isOverridden: true },
       ],
     },
@@ -90,23 +100,79 @@ export function TreeView({ isOpen, onClose }: TreeViewProps) {
   const getOriginColor = (origin: PropertyOrigin) => {
     switch (origin) {
       case 'global':
-        return 'text-gray-600 bg-gray-100';
+        return '';
       case 'range':
-        return 'text-blue-600 bg-blue-100';
-      case 'specific':
-        return 'text-purple-600 bg-purple-100';
+        return 'overrideCount flex items-center justify-center w-4 h-4 text-[8px] font-medium text-white bg-purple-500 rounded-full';
+      case 'size':
+        return 'overrideCount flex items-center justify-center w-4 h-4 text-[8px] font-medium text-white bg-orange-500 rounded-full';
     }
   };
 
   const getOriginLabel = (origin: PropertyOrigin) => {
     switch (origin) {
       case 'global':
-        return 'Global';
+        return '';
       case 'range':
-        return 'Range';
-      case 'specific':
-        return 'Specific';
+        return '1';
+      case 'size':
+        return '2';
     }
+  };
+
+  const renderProperty = (property: TreeProperty) => {
+    if (property.children) {
+      const isExpanded = expandedElements.has(property.name);
+      return (
+        <div key={property.name} className="space-y-1.5">
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleElement(property.name);
+            }}
+            className="relative tree-lvl2-hasChildren flex items-center justify-between pl-2 py-1.5 bg-white rounded   cursor-pointer font-medium"
+          >
+            <div className="relative flex items-center gap-4">
+               {/* Match sibling styling for nested parents too? */}
+               {property.isOverridden && (
+                  <div className="relative " />
+               )}
+               <span className="relative text-xs text-gray-700">{property.name}</span>
+            </div>
+            {isExpanded ? (
+               <ChevronDown className="relative w-4 h-4 text-gray-500" />
+            ) : (
+               <ChevronRight className="relative w-4 h-4 text-gray-500" />
+            )}
+          </div>
+          {isExpanded && (
+            <div className="relative tree-lvl3-children pl-4 space-y-1.5">
+              {property.children.map(renderProperty)}
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div
+        key={property.name}
+        className="relative tree-lvl2 flex items-center justify-between px-2 py-1.5   rounded "
+      >
+        <div className="relative flex items-center gap-4">
+          {property.isOverridden && (
+            <div className="relative " />
+          )}
+          <span className="relative text-xs text-gray-700">{property.name}</span>
+        </div>
+        <span
+          className={`text-xs px-2 py-0.5 rounded-full ${getOriginColor(
+            property.origin
+          )}`}
+        >
+          {getOriginLabel(property.origin)}
+        </span>
+      </div>
+    );
   };
 
   return (
@@ -126,25 +192,25 @@ export function TreeView({ isOpen, onClose }: TreeViewProps) {
 
         <div className="flex items-center gap-2 px-4 py-2 border-b border-gray-200 bg-white">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={expandAll}
-            className="text-xs h-7"
+            className="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent dark:hover:bg-accent/50 rounded-md gap-1.5 has-[>svg]:px-2.5 h-6 px-2 text-blue-600 hover:text-blue-700 text-xs"
           >
             Expand All
           </Button>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={collapseAll}
-            className="text-xs h-7"
+            className="inline-flex items-center justify-center whitespace-nowrap font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive hover:bg-accent dark:hover:bg-accent/50 rounded-md gap-1.5 has-[>svg]:px-2.5 h-6 px-2 text-blue-600 hover:text-blue-700 text-xs"
           >
             Collapse All
           </Button>
         </div>
 
         {/* Tree Content */}
-        <div className="flex-1 overflow-y-auto p-4">
+        <div className="tree flex-1 overflow-y-auto p-4">
           <div className="space-y-2">
             {elements.map((element) => (
               <div key={element.name} className="border border-gray-200 rounded-lg overflow-hidden">
@@ -161,26 +227,7 @@ export function TreeView({ isOpen, onClose }: TreeViewProps) {
                 </button>
                 {expandedElements.has(element.name) && (
                   <div className="px-2 pb-2 space-y-1.5 bg-gray-50/30">
-                    {element.properties.map((property) => (
-                      <div
-                        key={property.name}
-                        className="flex items-center justify-between px-2 py-1.5 bg-white rounded border border-gray-100"
-                      >
-                        <div className="flex items-center gap-2">
-                          {property.isOverridden && (
-                            <div className="w-1.5 h-1.5 rounded-full bg-orange-500" />
-                          )}
-                          <span className="text-xs text-gray-700">{property.name}</span>
-                        </div>
-                        <span
-                          className={`text-xs px-2 py-0.5 rounded-full ${getOriginColor(
-                            property.origin
-                          )}`}
-                        >
-                          {getOriginLabel(property.origin)}
-                        </span>
-                      </div>
-                    ))}
+                    {element.properties.map(renderProperty)}
                   </div>
                 )}
               </div>

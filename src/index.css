@@ -776,6 +776,9 @@
     justify-content: center;
   }
 
+  .gap-4 {
+    gap: calc(var(--spacing) * 5);
+  }
   .gap-1 {
     gap: calc(var(--spacing) * 1);
   }
@@ -1050,7 +1053,9 @@
   .p-8 {
     padding: calc(var(--spacing) * 8);
   }
-
+.pl-2 {
+  padding-left: calc(var(--spacing) * 2);
+}
   .px-1 {
     padding-inline: calc(var(--spacing) * 1);
   }
@@ -2041,6 +2046,11 @@ html {
   width: .75rem;
   height: .75rem;
   font-size: 7px;
+  padding: 0;
+}
+.tree .overrideCount {
+  position: absolute;
+  left: 17px;
 }
 
 .range-properties .overrideActive {
@@ -2166,4 +2176,83 @@ th:last-child, td:last-child {
 tr:last-child td,
 tr:last-child th {
   border-bottom: none;
+}
+.togglePixelRatio {
+    position: absolute;
+    top: -45px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+}
+.sizesRatios {
+position: absolute;
+text-align: center;
+left: 0;
+right: 0;
+}
+.creative {
+  transform: scale(1.6);
+}
+
+button {
+  cursor: pointer!important;
+}
+.tree-lvl2-hasChildren:before {
+  content: "";
+    position: absolute;
+    top: 0;
+    left: 0px;
+    height: 120%;
+    width: 1px;
+    background-color: var(--color-gray-500);
+  
+}
+.tree-lvl3-children > div {
+  padding-left: 2rem;
+}
+.tree-lvl3-children > div:before {
+  left: 18px;
+}
+.tree-lvl2:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0px;
+    /* height: 100%; */
+    height: 140%;
+    width: 1px;
+    background-color: var(--color-gray-500);
+}
+.tree-lvl3-children:before {
+    /* content: ""; */
+    position: absolute;
+    top: 0;
+    left: 0px;
+    /* height: 100%; */
+    height: 140%;
+    width: 1px;
+    background-color: var(--color-gray-500);
+}
+.tree-lvl2-hasChildren:after,
+.tree-lvl3-children > div:after,
+.tree-lvl2:after{
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 1px;
+  width: 10px;
+  background-color: var(--color-gray-500);
+  transform: translateY(-50%);
+}
+.tree-lvl3-children > div:after {
+  left: 18px;
+}
+
+.tree-lvl2, .tree-lvl2-hasChildren {
+  padding-left: 1rem;
+
+}
+.tree-lvl2-hasChildren{
+  font-weight: bold;
 }
