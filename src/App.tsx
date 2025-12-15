@@ -69,7 +69,7 @@ export default function App() {
           
 
           {/* Floating Top Navigation - Very Top */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-9999">
             <TopNavigation 
               activeTab={topNavTab} 
               onTabChange={setTopNavTab} 
