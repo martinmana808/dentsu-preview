@@ -40,7 +40,7 @@ export function TopNavigation({ activeTab, onTabChange, selectedFormat, onFormat
         {/* Dropdown Menu - Shows on hover */}
         {/* Using pt-2 instead of mt-2 to create a hoverable bridge */}
         <div 
-          className={`absolute top-full left-1/2 -translate-x-1/2 pt-2 w-32 transition-all duration-200 z-50 ${isHovered ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+          className={`absolute top-full left-1/2 -translate-x-1/2 pt-2 w-32 transition-all duration-200 z-9999 ${isHovered ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
         >
           <div className="bg-white rounded-lg shadow-xl border border-gray-100 py-1 flex flex-col gap-0.5">
             {AVAILABLE_FORMATS.map((format) => (
