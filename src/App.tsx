@@ -19,7 +19,7 @@ export type PanelMode = 'global' | 'specific' | 'element';
 export type SelectedElement = 'headline' | 'description' | 'coverImage' | 'photoCredits' | 'logoBottomLeft' | 'logoBottomRight' | null;
 
 export default function App() {
-  const [selectedFormat] = useState<AdFormat>({ width: 300, height: 600, label: '300 × 600' });
+  const [selectedFormat, setSelectedFormat] = useState<AdFormat>({ width: 300, height: 600, label: '300 × 600' });
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [panelMode, setPanelMode] = useState<PanelMode>('global');
   const [selectedElement, setSelectedElement] = useState<SelectedElement>(null);
@@ -70,7 +70,12 @@ export default function App() {
 
           {/* Floating Top Navigation - Very Top */}
           <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-            <TopNavigation activeTab={topNavTab} onTabChange={setTopNavTab} />
+            <TopNavigation 
+              activeTab={topNavTab} 
+              onTabChange={setTopNavTab} 
+              selectedFormat={selectedFormat}
+              onFormatChange={setSelectedFormat}
+            />
           </div>
 
           {/* Range Visualizer - Below Format Selector */}

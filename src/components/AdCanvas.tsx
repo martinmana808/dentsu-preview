@@ -9,6 +9,8 @@ type AdCanvasProps = {
 
 export function AdCanvas({ format, onElementClick }: AdCanvasProps) {
   return (
+    <>
+
     <div
       className="creative relative shadow-2xl overflow-hidden"
       style={{
@@ -59,5 +61,6 @@ export function AdCanvas({ format, onElementClick }: AdCanvasProps) {
         className="w-full h-full object-contain pointer-events-none"
       />
     </div>
+    </>
   );
 }
