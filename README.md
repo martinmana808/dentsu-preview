@@ -1,50 +1,42 @@
 # D4 Preview
 
-**D4 Preview** is a React-based visualization dashboard built for speed and precision.
+**D4 Preview** is a specialized visualization engine designed to bridge the gap between data and design. It serves as an interactive canvas where complex hierarchies, map data, and ad creatives converge into a unified, coherent experience.
 
-## 🚀 Features
+## Tech Stack
 
-*   **Interactive Visualization**:
-    *   **AdCanvas**: Preview creative assets in real-time.
-    *   **Maps**: Integrated geospatial data visualization.
-    *   **Tree Views**: Navigate complex data hierarchies with ease.
-*   **Modern Stack**: Built with [Vite](https://vitejs.dev/), [React](https://react.dev/), and [TypeScript](https://www.typescriptlang.org/).
-*   **UI Components**: Powered by [Radix UI](https://www.radix-ui.com/) and [Tailwind CSS](https://tailwindcss.com/) for accessible, high-quality interfaces.
+*   **Framework:** Svelte 5 (Runes) + Vite
+*   **Language:** TypeScript
+*   **Styling:** Tailwind CSS v4
+*   **UI Library:** Bits UI (Headless Svelte components)
+*   **Icons:** Lucide Svelte
 
-## 🛠️ Getting Started
+## Features
 
-### Prerequisites
-*   Node.js (LTS recommended)
+*   **AdCanvas:** Pixel-perfect rendering of ad creatives.
+*   **Tree View:** Interactive, recursive visualization of data hierarchies.
+*   **Properties Panel:** Detailed inspection and editing of selected elements.
+*   **Visualizer Maps:** Context-aware overlays for overrides and ranges.
 
-### Installation
+## Getting Started
 
-```bash
-npm install
-```
+1.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-### Development
+2.  **Start development server:**
+    ```bash
+    npm run dev
+    ```
 
-Start the development server:
+3.  **Build for production:**
+    ```bash
+    npm run build
+    ```
 
-```bash
-npm run dev
-```
+## Project Structure
 
-### Build
-
-Build for production:
-
-```bash
-npm run build
-```
-
-## 📂 Project Structure
-
-*   `src/components`: UI components and feature-specific logic.
-    *   `src/components/maps`: Map visualization components.
-    *   `src/components/ui`: Reusable UI primitives (buttons, dialogs, etc.).
-*   `src/guidelines`: Project documentation and guidelines.
-*   `src/data`: Static data resources.
-
-## 📄 License
-Private
+*   `src/components`: UI components (AdCanvas, Panels, Maps, etc.)
+*   `src/lib`: Shared utilities and type definitions.
+*   `src/assets`: Static assets.
+*   `_legacy_backup`: Backup of the previous React implementation.
