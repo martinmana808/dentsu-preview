@@ -103,7 +103,7 @@
   <div class={cn(extraClass, borderOverride, "form-field border border-gray-200 rounded-lg overflow-hidden", isNested ? 'bg-gray-50/50' : '')}>
     <button
       onclick={() => toggleSection(sectionId)}
-      class={cn("w-full flex items-center justify-between p-3 transition-colors", isNested ? 'hover:bg-white' : 'hover:bg-gray-50 bg-gray-50/30')}
+      class={cn("w-full flex items-center justify-between p-3 transition-colors cursor-pointer", isNested ? 'hover:bg-white' : 'hover:bg-gray-50 bg-gray-50/30')}
     >
       <div class="flex items-center gap-2">
          <span class={cn("text-sm", isNested ? 'text-gray-800' : 'text-gray-900')}>{title}</span>

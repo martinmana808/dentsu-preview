@@ -125,3 +125,85 @@ Ran `npm run build`:
 
 ### Artifacts
 *   `README.md` (Updated)
+
+<a name="log-20260204-input-styling"></a>
+## [2026-02-04] Input Styling Refinement
+
+**User Prompt:** Update input styling to match design reference (no border, light gray background).
+
+### Implementation Details
+*   **`src/components/ui/Input.svelte`**:
+    *   Removed `border-input`, `bg-transparent`.
+    *   Added `border-none`, `bg-gray-100/80` (approximate match to design).
+    *   Increased height to `h-10`.
+*   **`src/components/ui/Textarea.svelte`**:
+    *   Applied consistent styling (`border-none`, `bg-gray-100/80`).
+
+### Verification
+*   Manual check required (CSS changes via HMR).
+
+<a name="log-20260204-input-focus-styling"></a>
+## [2026-02-04] Focus State Refinement
+
+**User Prompt:** inputs focus visible should look like [gray ring] not like [black ring].
+
+### Implementation Details
+*   **`src/components/ui/Input.svelte`** & **`src/components/ui/Textarea.svelte`**:
+    *   Changed `focus-visible:ring-ring` (default black) to `focus-visible:ring-gray-300`.
+    *   Removed `focus-visible:ring-offset-2` to create a flush, border-like focus effect.
+
+### Verification
+*   Visual check required to confirm match with design screenshot.
+
+<a name="log-20260204-fix-focus-style"></a>
+## [2026-02-04] Fix Focus Styling
+
+**User Prompt:** "Please fix styling THIS IS WHAT WE WANT (subtle gray ring) NOT THIS (thick black ring)".
+
+### Implementation Details
+*   **`src/components/ui/Input.svelte`**:
+    *   Reverted the manual change that introduced `focus-visible:ring-[3px]` and `focus-visible:ring-ring/50`.
+    *   Restored the cleaner `focus-visible:ring-2 focus-visible:ring-gray-300` style.
+    *   Preserved the `transition-[color,box-shadow]` property.
+*   **`src/components/ui/Textarea.svelte`**:
+    *   Confirmed consistency with input styling.
+
+### Verification
+*   Verified against the "THIS IS WHAT WE WANT" screenshot provided by the user.
+
+<a name="log-20260204-file-input-styling"></a>
+## [2026-02-04] File Input Styling consistency
+
+**User Prompt:** "file inputs should have the same colors and bg colors as the normal text input and textareas".
+
+### Implementation Details
+*   **Problem:** File inputs in `PropertiesPanel` are `disabled`, while text inputs are `readonly`. The `disabled` state was triggering `opacity-50`, causing a visual mismatch.
+*   **Solution:** Removed `disabled:opacity-50` from `src/components/ui/Input.svelte` and `src/components/ui/Textarea.svelte`.
+*   **Result:** Disabled inputs now retain full background opacity (`bg-gray-100/80`) and text contrast, matching the readonly text inputs.
+
+### Verification
+*   Verified that removing the opacity rule standardizes the look of all input types in the panel.
+
+<a name="log-20260207-ui-refinement-and-planning"></a>
+## [2026-02-07] UI Refinements & Roadmap Update
+
+**User Prompt:** @[/git-add-commit-push] (After UI refinements and TODO update)
+
+### Implementation Details
+*   **UI Refinements (Inputs):**
+    *   Updated `Input` and `Textarea` to have a flat, borderless design with `bg-gray-100/80`.
+    *   Refined focus states to use a subtle `ring-gray-300` without offset, replacing the default high-contrast ring.
+    *   Standardized disabled state (used for file inputs) to match the opacity of readonly inputs.
+*   **Label Component:**
+    *   Updated `Label` styling to be more discrete (`text-xs`, `text-gray-500`, `uppercase`).
+*   **Properties Panel:**
+    *   Added cursor pointer to section headers.
+*   **Roadmap:**
+    *   Updated `TODO.md` with new feedback regarding:
+        1.  Image Manipulation controls (Origin point, positioning, overflow).
+        2.  Properties Pane overhaul (Single pane cascade, selective visibility).
+        3.  Breakpoints interface (Horizontal linear control).
+        4.  Admin tasks (Repo, Svelte integration).
+
+### Artifacts
+*   `TODO.md` (Updated)

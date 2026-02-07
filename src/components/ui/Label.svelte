@@ -12,7 +12,7 @@
 
 <LabelPrimitive.Root
   class={cn(
-    "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+    "flex items-center gap-2 text-xs leading-none text-gray-500 select-none group-data-[disabled=true]:pointer-events-none group-data-[disabled=true]:opacity-50 peer-disabled:cursor-not-allowed peer-disabled:opacity-50 my-2",
     className
   )}
   {...rest}

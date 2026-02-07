@@ -4,6 +4,22 @@
 **D4 Preview** is a **Svelte 5** application built with Vite and TypeScript. It utilizes Bits UI for its component library and features specialized visualization tools including maps, tree views, and an ad canvas.
 
 ## History
+### [2026-02-07] UI Refinements | [Git Workflow](./GEMINI--logs.md#log-20260207-ui-refinement-and-planning)
+*   Updated `Input`/`Textarea` styling (borderless, focus states, disabled opacity).
+*   Revised `TODO.md` with new feedback and roadmap items.
+
+### [2026-02-04] File Inputs | [UI Consistency](./GEMINI--logs.md#log-20260204-file-input-styling)
+*   Standardized disabled input styling to match readonly inputs (removed opacity fade).
+
+### [2026-02-04] Focus Fix | [Focus Styles Visual Bug](./GEMINI--logs.md#log-20260204-fix-focus-style)
+*   Reverted thick focus ring to subtle gray standard.
+
+### [2026-02-04] Input Focus | [UI Refinement](./GEMINI--logs.md#log-20260204-input-focus-styling)
+*   Updated focus ring to gray and removed offset for cleaner look.
+
+### [2026-02-04] Input Styling | [UI Refinement](./GEMINI--logs.md#log-20260204-input-styling)
+*   Updated `Input` and `Textarea` styling to match design (borderless, light gray).
+
 ### [2026-02-04] Translation Branch | [Git Workflow](./GEMINI--logs.md#log-20260204-translate-svelte-branch)
 *   Created `translate-to-svelte` branch.
 *   Updated `README.md` and Manifesto for Svelte context.
