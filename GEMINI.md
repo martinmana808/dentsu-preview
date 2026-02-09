@@ -4,6 +4,11 @@
 **D4 Preview** is a **Svelte 5** application built with Vite and TypeScript. It utilizes Bits UI for its component library and features specialized visualization tools including maps, tree views, and an ad canvas.
 
 ## History
+### [2026-02-09] YOLO v2 Fixes | [Layout & Styling](./GEMINI--logs.md#log-20260209-yolo-v2-fixes)
+*   **Z-Index Fix**: Moved floating menus to component root to prevent clipping.
+*   **Styling**: Implemented Range (Purple) and Size (Orange) variants for inputs.
+*   **Bug Fixes**: Resolved stacking context issues and event bubbling for dropdowns.
+
 ### [2026-02-09] YOLO v2 | [Data & UI Polish](./GEMINI--logs.md#log-20260209-yolo-v2-features)
 *   **Local DB**: Implemented `src/lib/data.ts` with hardcoded sizes, ranges, and random overrides.
 *   **UI Colors**: Applied Green (Global), Purple (Ranges), Orange (Sizes) color coding to Properties Panel.

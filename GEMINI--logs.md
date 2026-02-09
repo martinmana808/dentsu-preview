@@ -285,3 +285,31 @@ Executed the second `@[/yolo]` workflow to clear the updated `TODO.md` list.
 *   `src/components/AdCanvas.svelte` (Modified)
 *   `src/components/TopNavigation.svelte` (Modified)
 *   `src/components/Toolbar.svelte` (Modified)
+
+<a name="log-20260209-yolo-v2-fixes"></a>
+## [2026-02-09] YOLO v2: Layout & Styling Fixes
+
+**User Prompt:** `floating panels... not showing up`, `chevron...`, `form-field colors...`
+
+### Implementation Details
+Addressed specific UI regressions and styling requests following the YOLO v2 update.
+
+**1. Floating Menus (Stacking Context Fix)**
+*   The "Add Override" and "Apply" dropdowns were being clipped by the `PropertiesPanel`'s `overflow: hidden` or stacking context.
+*   **Fix:** Moved the dropdown DOM elements **outside** the sliding panel container to the component root. They are now direct children of `PropertiesPanelNew.svelte`, ensuring they float above all other UI elements using `fixed` positioning.
+
+**2. Styling Variants**
+*   Refactored `PropertySection` and its children to accept a `variant` prop (`range` | `size`).
+*   Applied requested color themes to inputs and textareas:
+    *   **Range:** `bg-purple-50 text-purple-900`, `border-purple-200`
+    *   **Size:** `bg-orange-50 text-orange-900`, `border-orange-200`
+
+**3. Bug Fixes**
+*   Fixed `stopPropagation` usage on the Chevron icon to allow proper toggling.
+*   Resolved duplicate key errors in `PropertySection` loops.
+*   Fixed TypeScript implicit `any` errors in event handlers.
+
+### Artifacts
+*   `src/components/PropertiesPanelNew.svelte` (Major Refactor)
+*   `src/components/ui/Input.svelte` (Styling tweaks)
+*   `src/components/ui/Textarea.svelte` (Styling tweaks)

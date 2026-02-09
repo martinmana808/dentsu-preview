@@ -1,25 +1,46 @@
-- Global, Range, Size: They should have a Expand all/ collapse all a the top. 
-- when clicking iomage, infinite loop of fuckups
+## 00- Let's work with a local database. I mean, lets determine some HARDCODED database records for now. 
+Let's determine the fields and the values for each field:
+We already have the proiperties for this creative. 
+We need sizes:
+- 945 x 315
+- 2160x3840
+- 900 x 200
+- 1024 x 768
+- 640 x 480
+- 640 x 960
 
-1. IMAGE MANIPULATIOON
-You need to solve a specific "design or interaction problem" regarding how users manipulate elements like images within a frame.
-• Visualise the Origin Point: Create a visual indicator (such as a crosshair) at the "zero point" or origin of the wrapper so users can see how an image is offset from the centre.
-• Positioning Controls: Ensure the scale slider is in a fixed position (e.g., underneath the centre) rather than being absolute to the container.
-• Reset Functionality: Implement a way to "reset to zero" for both X and Y offsets, especially for cases where an image has been dragged off-screen.
-• Overflow Toggle: Add an option to toggle "overflow hidden" on or off. This allows users to see parts of an image that exceed the frame boundaries during the design process, even if they are hidden in the final production export.
+and ranges:
+- <480px
+- 480px - 768px
+- 768px - 1024px
+- 1024px - 1440px
+- 1440px - 2000px
+- >2000px
 
-2. Property Pane & "Overrides Map" Overhaul
-The current system of using multiple tabs (Globals, Ranges, and Sizes) was described as "overwhelming" for non-technical marketing users.
-• Single Pane Cascade: Move away from multiple tabs towards a single pane of properties that uses a "cascade" or "editing mode".
-• Selective Visibility: Instead of showing every property three times, modify the "Ranges" and "Sizes" views to only show active overrides. If a property isn't being overridden at that level, it should not be shown prominently.
-• Mode Selection: Implement a way for users to choose if their edits apply to the current size only, a range, or globally, rather than having to jump between tabs to perform different types of work.
+And with each of these sizes, attach some overrides randomly to create the database. That way when we operate the app in demo mode to the client, he can see that the information actually changes, and he can have a proper understanding of what is happening and how it works and how it will work in production. 
 
-3. Breakpoints and Ranges Interface
-You need to redesign the range-editing interface to be more intuitive and less "detached" from the actual creative work.
-• Horizontal Linear Interface: Create a horizontal, linear control at the top of the interface that shows all available sizes (referred to as "break points").
-• Interactive Highlighting: When a user hovers over a range, the interface should highlight all the specific sizes that fall within that range.
-• Direct Manipulation: Allow users to drag the start and end points of these ranges to extend or reduce them across the sizes.
-4. Technical and Administrative Tasks
-• GitHub Repository: You need to put your current work on GitHub so James can review how you have put the styles and markup together.
-• Svelte Integration: Continue working on integrating the front-end functionality into the Svelte app environment, ensuring that interactions are handled correctly with standard JavaScript.
-• Invoicing: You are encouraged to invoice for the time you have spent on the project up to this current stage.
+## 0- overall, let's identify globals with green (same way ranges is purple and size is orange)
+
+## 1-  The properties panel? 
+Great. I love it. WEll done. 
+Minor changes: 
+
+the overriden property should be:
+- field: text-purple-900 bg-purple-50 when it is a range
+- field: text-orange-900 bg-orange-50 when it is a size
+- container div (relative expanded form-field border border-gray-200 rounded-lg overflow-hidden) should be: border-purple-200 when it is a range and border-orange-200 when it is a size
+
+When i click on add override, it opens a floating menu, but if there properties panel is too short, not tall enough, it has overflow hidden, so the floating menu is not visible and you gotta scroll within the roperties panel. we should fix this. 
+
+In the GLOBAL / RANGES / SIZES selector, (flex-1 px-4 py-2.5 text-sm transition-all capitalize bg-white text-gray-900 border-b-2 border-blue-500) the border should be purple in ranges, orange in sizes and green in globals. Same with the 'expand all' and 'collapse all' buttons. 
+
+If the override is collapsed, when I click on apply , nothing appears to happen, because the floating menu is not visible, because its parent is overflow hidden, so you gonna have to do something similar to what you are doing with the ADD OVERRIDE floating menu. 
+
+The apply to should be Global, Range, Size. 
+And Range and Size should let you apply to multiple, like select multiple to apply to. 
+
+## 2 - BEM classes
+We should add BEM classes to the elements in the DOM so that we can target them with CSS and JavaScript, and for easier identification of the elements in the DOM for when debugging with humans. Just for identification. You wont go and do EVERY SINGLE ITEM, just the main ones that would make sense.
+
+
+
