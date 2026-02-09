@@ -4,6 +4,11 @@
 **D4 Preview** is a **Svelte 5** application built with Vite and TypeScript. It utilizes Bits UI for its component library and features specialized visualization tools including maps, tree views, and an ad canvas.
 
 ## History
+### [2026-02-08] YOLO Workflow | [Major Feature Implementation](./GEMINI--logs.md#log-20260208-yolo-workflow)
+*   **Image Controls**: Implemented scaling, panning, origin visualization, and overflow toggle in `AdCanvas`.
+*   **Properties Overhaul**: Refactored panel for selective overrides (add/remove) and application scopes ("Apply to").
+*   **Breakpoints UI**: Created `BreakpointsBar` for linear format/range visualization at the top of the app.
+
 ### [2026-02-07] UI Refinements | [Git Workflow](./GEMINI--logs.md#log-20260207-ui-refinement-and-planning)
 *   Updated `Input`/`Textarea` styling (borderless, focus states, disabled opacity).
 *   Revised `TODO.md` with new feedback and roadmap items.
