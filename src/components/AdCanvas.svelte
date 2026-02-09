@@ -49,14 +49,14 @@
 
 <!-- svelte-ignore a11y_no_static_element_interactions -->
 <div 
-  class="relative flex flex-col items-center gap-4"
+  class="ad-canvas relative flex flex-col items-center gap-4"
   onmousemove={handleMouseMove}
   onmouseup={handleMouseUp}
   onmouseleave={handleMouseUp}
 >
   <div
     class={cn(
-      "creative relative shadow-2xl bg-black group select-none", 
+      "ad-canvas__creative creative relative shadow-2xl bg-black group select-none", 
       showOverflow ? "overflow-visible ring-2 ring-dashed ring-yellow-400/50" : "overflow-hidden"
     )}
     style="width: {format.width}px; height: {format.height}px;"
@@ -74,7 +74,7 @@
     <!-- Headline Area - Top -->
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <div
-      class="absolute top-0 left-0 right-0 h-20 cursor-pointer hover:bg-blue-500/10 transition-colors z-20 border border-transparent hover:border-blue-400/30"
+      class="ad-canvas__element ad-canvas__element--headline absolute top-0 left-0 right-0 h-20 cursor-pointer hover:bg-blue-500/10 transition-colors z-20 border border-transparent hover:border-blue-400/30"
       onclick={(e) => { e.stopPropagation(); onElementClick('headline'); }}
       title="Click to edit headline"
     ></div>
@@ -126,7 +126,7 @@
   </div>
 
   <!-- Manipulation Controls (Fixed underneath) -->
-  <div class="flex items-center gap-4 px-4 py-2 bg-white rounded-full shadow-lg border border-gray-200 z-40 transition-all hover:shadow-xl">
+  <div class="ad-canvas__controls flex items-center gap-4 px-4 py-2 bg-white rounded-full shadow-lg border border-gray-200 z-40 transition-all hover:shadow-xl">
      <!-- Position Reset -->
      <button 
       class="p-1.5 rounded-full hover:bg-gray-100 text-gray-600 tooltip-trigger" 

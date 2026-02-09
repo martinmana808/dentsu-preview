@@ -25,7 +25,7 @@
   let isHovered = $state(false);
 </script>
 
-<div class="bg-white/95 backdrop-blur-sm rounded-full shadow-lg border border-gray-200 px-1 py-1 flex items-center gap-1 z-50">
+<div class="top-navigation bg-white/95 backdrop-blur-sm rounded-full shadow-lg border border-gray-200 px-1 py-1 flex items-center gap-1 z-50">
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div 
     class="relative"
@@ -35,7 +35,7 @@
     <button
       onclick={() => onTabChange('Creative')}
       class={cn(
-        "text-xs px-5 py-1.5 rounded-full transition-all",
+        "top-navigation__tab text-xs px-5 py-1.5 rounded-full transition-all",
         activeTab === 'Creative'
           ? 'bg-gray-900 text-white'
           : 'bg-transparent text-gray-600 hover:bg-gray-100'

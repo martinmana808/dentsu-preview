@@ -35,9 +35,9 @@
   };
 </script>
 
-<div class="w-full bg-white border-b border-gray-200 h-24 flex flex-col relative overflow-hidden select-none">
+<div class="breakpoints-bar w-full bg-white border-b border-gray-200 h-24 flex flex-col relative overflow-hidden select-none">
   <!-- Ranges Layer -->
-  <div class="h-10 flex w-full relative border-b border-gray-100">
+  <div class="breakpoints-bar__ranges h-10 flex w-full relative border-b border-gray-100">
      {#each ranges as range, i}
         <div 
           class={cn(
@@ -58,7 +58,7 @@
   </div>
 
   <!-- Ruler & Formats Layer -->
-  <div class="flex-1 relative bg-gray-50/50">
+  <div class="breakpoints-bar__ruler flex-1 relative bg-gray-50/50">
      <!-- Ticks -->
      {#each Array.from({ length: 13 }) as _, i}
         <div 

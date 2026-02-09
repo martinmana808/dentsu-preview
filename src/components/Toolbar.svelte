@@ -41,14 +41,14 @@
   ]);
 </script>
 
-<div class="bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 flex flex-col items-center py-2 px-1 gap-1">
+<div class="toolbar bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 flex flex-col items-center py-2 px-1 gap-1">
   {#each tools as tool}
     <div class="relative flex items-center">
       <Button 
         variant="ghost" 
         size="icon" 
         class={cn(
-          "peer w-9 h-9",
+          "toolbar__tool peer w-9 h-9",
           tool.mode && activeMode === tool.mode 
             ? 'bg-blue-100 text-blue-600' 
             : ('isActive' in tool && tool.isActive)
