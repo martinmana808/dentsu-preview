@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { X, ChevronDown, ChevronRight, Check } from 'lucide-svelte';
+  import { X, ChevronDown, ChevronRight, Check, Plus, Trash2, ArrowRight, Settings } from 'lucide-svelte';
   import Button from './ui/Button.svelte';
   import Input from './ui/Input.svelte';
   import Label from './ui/Label.svelte';
@@ -41,12 +41,43 @@
   let selectedRange = $state('<480px');
   const ranges = ['<480px', '480px>768px', '1000px>2000px', '200px<'];
 
-  // Mock Override State
-  let showApplyToOthers: string | null = $state(null);
+  // Override Management
+  let activeRangeOverrides = $state(new Set(['headline']));
+  let activeSizeOverrides = $state(new Set(['description', 'coverImage']));
+  
+  let isAddRangeOverrideOpen = $state(false);
+  let isAddSizeOverrideOpen = $state(false);
 
-  // Mock Dropdown State
-  let isRangesOpen = $state(false);
-  let isSizesOpen = $state(false);
+  let showApplyToDropdown: string | null = $state(null);
+
+  const addRangeOverride = (sectionId: string) => {
+    const newSet = new Set(activeRangeOverrides);
+    newSet.add(sectionId);
+    activeRangeOverrides = newSet;
+    isAddRangeOverrideOpen = false;
+    // Auto-expand
+    if (!expandedSections.has(sectionId)) toggleSection(sectionId);
+  };
+
+  const removeRangeOverride = (sectionId: string) => {
+    const newSet = new Set(activeRangeOverrides);
+    newSet.delete(sectionId);
+    activeRangeOverrides = newSet;
+  };
+
+  const addSizeOverride = (sectionId: string) => {
+     const newSet = new Set(activeSizeOverrides);
+     newSet.add(sectionId);
+     activeSizeOverrides = newSet;
+     isAddSizeOverrideOpen = false;
+     if (!expandedSections.has(sectionId)) toggleSection(sectionId);
+  };
+
+  const removeSizeOverride = (sectionId: string) => {
+     const newSet = new Set(activeSizeOverrides);
+     newSet.delete(sectionId);
+     activeSizeOverrides = newSet;
+  };
 
   const expandAll = () => expandedSections = new Set(ALL_SECTIONS);
   const collapseAll = () => expandedSections = new Set();
@@ -88,7 +119,11 @@
     isNested = false, 
     rangeOverrideCount = 0, 
     sizeOverrideCount = 0, 
-    extraClass = "" 
+    extraClass = "",
+    onRemove = undefined,
+    onApply = undefined,
+    applyDropdownOpen = false,
+    onToggleApply = undefined
 }: { 
     title: string, 
     sectionId: string, 
@@ -96,7 +131,11 @@
     isNested?: boolean,
     rangeOverrideCount?: number,
     sizeOverrideCount?: number,
-    extraClass?: string
+    extraClass?: string,
+    onRemove?: () => void,
+    onApply?: () => void,
+    applyDropdownOpen?: boolean,
+    onToggleApply?: (e: Event) => void
 })}
   {@const isExpanded = expandedSections.has(sectionId)}
   {@const borderOverride = isExpanded ? "expanded" : "collapsed"}
@@ -136,11 +175,45 @@
             </div>
          {/if}
       </div>
-      {#if isExpanded}
-        <ChevronDown class="w-4 h-4 text-gray-500" />
-      {:else}
-        <ChevronRight class="w-4 h-4 text-gray-500" />
-      {/if}
+      
+      <div class="flex items-center gap-2" onclick={(e) => e.stopPropagation()}>
+         {#if onApply && onToggleApply}
+             <div class="relative">
+                <button 
+                  class={cn("p-1 rounded text-xs flex items-center gap-1 hover:bg-gray-100", extraClass.includes('purple') ? "text-purple-600" : "text-orange-600")}
+                  title="Apply to..."
+                  onclick={onToggleApply}
+                >
+                  <ArrowRight class="w-3 h-3" />
+                  <span class="text-[10px] font-medium">Apply</span>
+                </button>
+                {#if applyDropdownOpen}
+                    <div class="absolute right-0 top-8 w-40 bg-white shadow-xl rounded-lg border border-gray-200 z-50 py-1" onclick={(e) => e.stopPropagation()}>
+                        <div class="px-2 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Apply to...</div>
+                        <button class="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 text-gray-700" onclick={onApply}>All Scopes</button>
+                        <button class="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 text-gray-700" onclick={onApply}>Specific...</button>
+                    </div>
+                    <!-- Backdrop handled by parent or simpler click-outside logic needed, but for now this suffices as mock -->
+                {/if}
+             </div>
+         {/if}
+         
+         {#if onRemove}
+             <button 
+                class="p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded"
+                title="Remove override"
+                onclick={(e) => { e.stopPropagation(); onRemove(); }}
+             >
+                <Trash2 class="w-3 h-3" />
+             </button>
+         {/if}
+
+         {#if isExpanded}
+           <ChevronDown class="w-4 h-4 text-gray-500" />
+         {:else}
+           <ChevronRight class="w-4 h-4 text-gray-500" />
+         {/if}
+      </div>
     </button>
     {#if isExpanded}
        <div class={cn("p-3 border-t border-gray-200 bg-white space-y-3 animate-in slide-in-from-top-2 duration-200", isNested ? "p-2" : "")}>
@@ -343,31 +416,81 @@
 
       <div class="h-px bg-gray-100 my-2"></div>
 
-      <div class="flex items-center gap-2">
-        <Button variant="ghost" size="sm" onclick={expandAll} class="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
-          Expand all properties
-        </Button>
-        <div class="w-px h-3 bg-gray-200"></div>
-        <Button variant="ghost" size="sm" onclick={collapseAll} class="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
-          Collapse all properties
-        </Button>
+      <div class="flex items-center justify-between">
+         <div class="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onclick={expandAll} class="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
+              Expand all
+            </Button>
+            <div class="w-px h-3 bg-gray-200"></div>
+            <Button variant="ghost" size="sm" onclick={collapseAll} class="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
+              Collapse all
+            </Button>
+         </div>
+
+         <!-- Add Override Dropdown -->
+         <div class="relative">
+            <Button 
+               variant="outline" 
+               size="sm" 
+               class="h-7 text-xs gap-1 border-purple-200 text-purple-700 hover:bg-purple-50"
+               onclick={() => isAddRangeOverrideOpen = !isAddRangeOverrideOpen}
+            >
+               <Plus class="w-3 h-3" />
+               Add override
+            </Button>
+            
+            {#if isAddRangeOverrideOpen}
+               <div class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50 py-1 max-h-60 overflow-y-auto">
+                  {#each ALL_SECTIONS.filter(s => !activeRangeOverrides.has(s)) as section}
+                     <button
+                        class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-900"
+                        onclick={() => addRangeOverride(section)}
+                     >
+                        {section}
+                     </button>
+                  {/each}
+                  {#if ALL_SECTIONS.filter(s => !activeRangeOverrides.has(s)).length === 0}
+                     <div class="px-3 py-2 text-xs text-gray-400 italic">No more properties</div>
+                  {/if}
+               </div>
+               <!-- Backdrop -->
+               <!-- svelte-ignore a11y_click_events_have_key_events -->
+               <!-- svelte-ignore a11y_no_static_element_interactions -->
+               <div class="fixed inset-0 z-40" onclick={() => isAddRangeOverrideOpen = false}></div>
+            {/if}
+         </div>
       </div>
 
-      <!-- Reuse Property Sections but conceptually they would edit overrides -->
-      <!-- Headline -->
-      {@render PropertySection({ title: "Headline", sectionId: "headline", children: HeadlineContent, extraClass: "border-purple-200" })}
-      <!-- Description -->
-      {@render PropertySection({ title: "Description", sectionId: "description", children: DescriptionContent, extraClass: "border-purple-200" })}
-      <!-- Cover Image -->
-      {@render PropertySection({ title: "Cover Image", sectionId: "coverImage", children: CoverImageContent, extraClass: "border-purple-200" })}
-      <!-- Photo Credits -->
-      {@render PropertySection({ title: "Photo Credits", sectionId: "photoCredits", children: PhotoCreditsContent, extraClass: "border-purple-200" })}
-      <!-- Bottom Right Logo -->
-      {@render PropertySection({ title: "Bottom Right Logo", sectionId: "logoBottomRight", children: LogoRightContent, extraClass: "border-purple-200" })}
-      <!-- Bottom Left Logo -->
-      {@render PropertySection({ title: "Bottom Left Logo", sectionId: "logoBottomLeft", children: LogoLeftContent, extraClass: "border-purple-200" })}
-      <!-- Font Colour -->
-      {@render PropertySection({ title: "Font Colour", sectionId: "fontColour", children: FontColourContent, extraClass: "border-purple-200" })}
+      {#if activeRangeOverrides.size === 0}
+         <div class="text-center py-8 text-gray-400 text-sm italic bg-gray-50 rounded-lg border border-dashed border-gray-200">
+            No overrides active for this range.
+         </div>
+      {/if}
+      
+      <!-- Range Overrides List -->
+      {#each Array.from(activeRangeOverrides) as sectionId}
+         {@const titleMap: Record<string, string> = {
+            headline: "Headline", description: "Description", coverImage: "Cover Image",
+            photoCredits: "Photo Credits", logoBottomRight: "Bottom Right Logo",
+            logoBottomLeft: "Bottom Left Logo", fontColour: "Font Colour"
+         }}
+         {@const contentMap: Record<string, any> = {
+            headline: HeadlineContent, description: DescriptionContent, coverImage: CoverImageContent,
+            photoCredits: PhotoCreditsContent, logoBottomRight: LogoRightContent,
+            logoBottomLeft: LogoLeftContent, fontColour: FontColourContent
+         }}
+         
+         {@render PropertySection({ 
+            title: titleMap[sectionId], 
+            sectionId: sectionId, 
+            children: contentMap[sectionId], 
+            extraClass: "border-purple-200 relative",
+            onRemove: () => removeRangeOverride(sectionId),
+            onApply: () => { showApplyToDropdown = null; },
+            applyDropdownOpen: showApplyToDropdown === sectionId,
+            onToggleApply: (e) => { e.stopPropagation(); showApplyToDropdown = showApplyToDropdown === sectionId ? null : sectionId; }
+         })}
+      {/each}
     </div>
 {/snippet}
 
@@ -394,31 +517,83 @@
 
       <div class="h-px bg-gray-100 my-2"></div>
 
-      <div class="flex items-center gap-2">
-        <Button variant="ghost" size="sm" onclick={expandAll} class="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
-          Expand all properties
-        </Button>
-        <div class="w-px h-3 bg-gray-200"></div>
-        <Button variant="ghost" size="sm" onclick={collapseAll} class="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
-          Collapse all properties
-        </Button>
+      <div class="flex items-center justify-between">
+         <div class="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onclick={expandAll} class="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
+              Expand all
+            </Button>
+            <div class="w-px h-3 bg-gray-200"></div>
+            <Button variant="ghost" size="sm" onclick={collapseAll} class="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
+              Collapse all
+            </Button>
+         </div>
+
+         <!-- Add Override Dropdown -->
+         <div class="relative">
+            <Button 
+               variant="outline" 
+               size="sm" 
+               class="h-7 text-xs gap-1 border-orange-200 text-orange-700 hover:bg-orange-50"
+               onclick={() => isAddSizeOverrideOpen = !isAddSizeOverrideOpen}
+            >
+               <Plus class="w-3 h-3" />
+               Add override
+            </Button>
+            
+            {#if isAddSizeOverrideOpen}
+               <div class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50 py-1 max-h-60 overflow-y-auto">
+                  {#each ALL_SECTIONS.filter(s => !activeSizeOverrides.has(s)) as section}
+                     <button
+                        class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-900"
+                        onclick={() => addSizeOverride(section)}
+                     >
+                        {section}
+                     </button>
+                  {/each}
+                  {#if ALL_SECTIONS.filter(s => !activeSizeOverrides.has(s)).length === 0}
+                     <div class="px-3 py-2 text-xs text-gray-400 italic">No more properties</div>
+                  {/if}
+               </div>
+               <!-- Backdrop -->
+               <!-- svelte-ignore a11y_click_events_have_key_events -->
+               <!-- svelte-ignore a11y_no_static_element_interactions -->
+               <div class="fixed inset-0 z-40" onclick={() => isAddSizeOverrideOpen = false}></div>
+            {/if}
+         </div>
       </div>
 
-      <!-- Reuse Property Sections -->
-      <!-- Headline -->
-      {@render PropertySection({ title: "Headline", sectionId: "headline", children: HeadlineContent, extraClass: "border-orange-200" })}
-      <!-- Description -->
-      {@render PropertySection({ title: "Description", sectionId: "description", children: DescriptionContent, extraClass: "border-orange-200" })}
-      <!-- Cover Image -->
-      {@render PropertySection({ title: "Cover Image", sectionId: "coverImage", children: CoverImageContent, extraClass: "border-orange-200" })}
-      <!-- Photo Credits -->
-      {@render PropertySection({ title: "Photo Credits", sectionId: "photoCredits", children: PhotoCreditsContent, extraClass: "border-orange-200" })}
-      <!-- Bottom Right Logo -->
-      {@render PropertySection({ title: "Bottom Right Logo", sectionId: "logoBottomRight", children: LogoRightContent, extraClass: "border-orange-200" })}
-      <!-- Bottom Left Logo -->
-      {@render PropertySection({ title: "Bottom Left Logo", sectionId: "logoBottomLeft", children: LogoLeftContent, extraClass: "border-orange-200" })}
-      <!-- Font Colour -->
-      {@render PropertySection({ title: "Font Colour", sectionId: "fontColour", children: FontColourContent, extraClass: "border-orange-200" })}
+      <div class="h-px bg-gray-100 my-2"></div>
+
+      {#if activeSizeOverrides.size === 0}
+         <div class="text-center py-8 text-gray-400 text-sm italic bg-gray-50 rounded-lg border border-dashed border-gray-200">
+            No overrides active for this size.
+         </div>
+      {/if}
+
+      <!-- Size Overrides List -->
+      {#each Array.from(activeSizeOverrides) as sectionId}
+         {@const titleMap: Record<string, string> = {
+            headline: "Headline", description: "Description", coverImage: "Cover Image",
+            photoCredits: "Photo Credits", logoBottomRight: "Bottom Right Logo",
+            logoBottomLeft: "Bottom Left Logo", fontColour: "Font Colour"
+         }}
+         {@const contentMap: Record<string, any> = {
+            headline: HeadlineContent, description: DescriptionContent, coverImage: CoverImageContent,
+            photoCredits: PhotoCreditsContent, logoBottomRight: LogoRightContent,
+            logoBottomLeft: LogoLeftContent, fontColour: FontColourContent
+         }}
+         
+         {@render PropertySection({ 
+            title: titleMap[sectionId], 
+            sectionId: sectionId, 
+            children: contentMap[sectionId], 
+            extraClass: "border-orange-200 relative",
+            onRemove: () => removeSizeOverride(sectionId),
+            onApply: () => { showApplyToDropdown = null; },
+            applyDropdownOpen: showApplyToDropdown === sectionId,
+            onToggleApply: (e) => { e.stopPropagation(); showApplyToDropdown = showApplyToDropdown === sectionId ? null : sectionId; }
+         })}
+      {/each}
     </div>
 {/snippet}
 
