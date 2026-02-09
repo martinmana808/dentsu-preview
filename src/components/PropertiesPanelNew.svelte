@@ -226,11 +226,11 @@
 {#snippet renderGlobalProperties()}
     <div class="space-y-3 global-properties">
       <div class="flex items-center gap-2">
-        <Button variant="ghost" size="sm" onclick={expandAll} class="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
+        <Button variant="ghost" size="sm" onclick={expandAll} class="h-6 text-[10px] px-2 text-green-600 hover:text-green-700 text-xs">
           Expand all properties
         </Button>
         <div class="w-px h-3 bg-gray-200"></div>
-        <Button variant="ghost" size="sm" onclick={collapseAll} class="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
+        <Button variant="ghost" size="sm" onclick={collapseAll} class="h-6 text-[10px] px-2 text-green-600 hover:text-green-700 text-xs">
           Collapse all properties
         </Button>
       </div>
@@ -286,7 +286,8 @@
         title: "Font Colour",
         sectionId: "fontColour",
         rangeOverrideCount: 1,
-        children: FontColourContent
+        children: FontColourContent,
+        extraClass: "border-green-200"
       })}
     </div>
 {/snippet}
@@ -378,12 +379,13 @@
     <!-- Tabs -->
     <div class="flex border-b border-gray-200 bg-gray-50/30">
       {#each ['global', 'ranges', 'sizes'] as tab}
+        {@const activeColor = tab === 'global' ? 'border-green-500 text-green-700' : tab === 'ranges' ? 'border-purple-500 text-purple-700' : 'border-orange-500 text-orange-700'}
         <button
           onclick={() => onTabChange(tab as PropertyTab)}
           class={cn(
             "flex-1 px-4 py-2.5 text-sm transition-all capitalize",
             activeTab === tab
-              ? 'bg-white text-gray-900 border-b-2 border-blue-500'
+              ? `bg-white border-b-2 ${activeColor}`
               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
           )}
         >
@@ -418,11 +420,11 @@
 
       <div class="flex items-center justify-between">
          <div class="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onclick={expandAll} class="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
+            <Button variant="ghost" size="sm" onclick={expandAll} class="h-6 text-[10px] px-2 text-purple-600 hover:text-purple-700 text-xs">
               Expand all
             </Button>
             <div class="w-px h-3 bg-gray-200"></div>
-            <Button variant="ghost" size="sm" onclick={collapseAll} class="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
+            <Button variant="ghost" size="sm" onclick={collapseAll} class="h-6 text-[10px] px-2 text-purple-600 hover:text-purple-700 text-xs">
               Collapse all
             </Button>
          </div>
@@ -519,11 +521,11 @@
 
       <div class="flex items-center justify-between">
          <div class="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onclick={expandAll} class="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
+            <Button variant="ghost" size="sm" onclick={expandAll} class="h-6 text-[10px] px-2 text-orange-600 hover:text-orange-700 text-xs">
               Expand all
             </Button>
             <div class="w-px h-3 bg-gray-200"></div>
-            <Button variant="ghost" size="sm" onclick={collapseAll} class="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
+            <Button variant="ghost" size="sm" onclick={collapseAll} class="h-6 text-[10px] px-2 text-orange-600 hover:text-orange-700 text-xs">
               Collapse all
             </Button>
          </div>
