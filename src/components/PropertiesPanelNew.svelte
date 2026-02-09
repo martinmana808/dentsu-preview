@@ -132,6 +132,7 @@
     rangeOverrideCount = 0, 
     sizeOverrideCount = 0, 
     extraClass = "",
+    variant = null,
     onRemove = undefined,
     onApplyClick = undefined,
 }: { 
@@ -142,12 +143,13 @@
     rangeOverrideCount?: number,
     sizeOverrideCount?: number,
     extraClass?: string,
+    variant?: 'range' | 'size' | null,
     onRemove?: () => void,
     onApplyClick?: (e: MouseEvent) => void,
 })}
   {@const isExpanded = expandedSections.has(sectionId)}
   {@const borderOverride = isExpanded ? "expanded" : "collapsed"}
-  <div class={cn(extraClass, borderOverride, "form-field border border-gray-200 rounded-lg overflow-hidden", isNested ? 'bg-gray-50/50' : '')}>
+  <div class={cn("form-field border border-gray-200 rounded-lg overflow-hidden", extraClass, borderOverride, isNested ? 'bg-gray-50/50' : '')}>
     <button
       onclick={() => toggleSection(sectionId)}
       class={cn("w-full flex items-center justify-between p-3 transition-colors cursor-pointer", isNested ? 'hover:bg-white' : 'hover:bg-gray-50 bg-gray-50/30')}
@@ -184,29 +186,31 @@
          {/if}
       </div>
       
-      <div class="flex items-center gap-2" onclick={(e) => e.stopPropagation()}>
-         {#if onApplyClick}
-             <div class="relative">
-                <button 
-                  class={cn("p-1 rounded text-xs flex items-center gap-1 hover:bg-gray-100", extraClass.includes('purple') ? "text-purple-600" : "text-orange-600")}
-                  title="Apply to..."
-                  onclick={onApplyClick}
-                >
-                  <ArrowRight class="w-3 h-3" />
-                  <span class="text-[10px] font-medium">Apply</span>
-                </button>
-             </div>
-         {/if}
-         
-         {#if onRemove}
-             <button 
-                class="p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded"
-                title="Remove override"
-                onclick={(e) => { e.stopPropagation(); onRemove(); }}
-             >
-                <Trash2 class="w-3 h-3" />
-             </button>
-         {/if}
+      <div class="flex items-center gap-2">
+         <div class="flex items-center gap-2" onclick={(e) => e.stopPropagation()}>
+           {#if onApplyClick}
+               <div class="relative">
+                  <button 
+                    class={cn("p-1 rounded text-xs flex items-center gap-1 hover:bg-gray-100", extraClass.includes('purple') ? "text-purple-600" : "text-orange-600")}
+                    title="Apply to..."
+                    onclick={onApplyClick}
+                  >
+                    <ArrowRight class="w-3 h-3" />
+                    <span class="text-[10px] font-medium">Apply</span>
+                  </button>
+               </div>
+           {/if}
+           
+           {#if onRemove}
+               <button 
+                  class="p-1 text-red-400 hover:text-red-600 hover:bg-red-50 rounded"
+                  title="Remove override"
+                  onclick={(e) => { e.stopPropagation(); onRemove(); }}
+               >
+                  <Trash2 class="w-3 h-3" />
+               </button>
+           {/if}
+         </div>
 
          {#if isExpanded}
            <ChevronDown class="w-4 h-4 text-gray-500" />
@@ -217,7 +221,7 @@
     </button>
     {#if isExpanded}
        <div class={cn("p-3 border-t border-gray-200 bg-white space-y-3 animate-in slide-in-from-top-2 duration-200", isNested ? "p-2" : "")}>
-          {@render children()}
+          {@render children({ variant })}
        </div>
     {/if}
   </div>
@@ -227,11 +231,11 @@
     <div class="space-y-3 global-properties">
       <div class="flex items-center gap-2">
         <Button variant="ghost" size="sm" onclick={expandAll} class="h-6 text-[10px] px-2 text-green-600 hover:text-green-700 text-xs">
-          Expand all properties
+          Expand all 
         </Button>
         <div class="w-px h-3 bg-gray-200"></div>
         <Button variant="ghost" size="sm" onclick={collapseAll} class="h-6 text-[10px] px-2 text-green-600 hover:text-green-700 text-xs">
-          Collapse all properties
+          Collapse all 
         </Button>
       </div>
 
@@ -292,14 +296,22 @@
     </div>
 {/snippet}
 
-{#snippet HeadlineContent()}
+{#snippet HeadlineContent({ variant }: { variant?: 'range' | 'size' | null } = {})}
     <div class="space-y-2">
         <Label for="headline-text">Text</Label>
-        <Input id="headline-text" value="THE GOAT" readonly />
+        <Input 
+          id="headline-text" 
+          value="THE GOAT" 
+          readonly 
+          class={cn(
+            variant === 'range' && "text-purple-900 bg-purple-50",
+            variant === 'size' && "text-orange-900 bg-orange-50"
+          )}
+        />
     </div>
 {/snippet}
 
-{#snippet DescriptionContent()}
+{#snippet DescriptionContent({ variant }: { variant?: 'range' | 'size' | null } = {})}
     <div class="space-y-2">
         <Label for="description-text">Text</Label>
         <Textarea
@@ -307,39 +319,75 @@
           value={`EMMA TWIGG\nWORLD CHAMPION - WOMEN'S SOLO\nWORLD ROWING BEACH SPRINT FINALS`}
           readonly
           rows={3}
+          class={cn(
+            variant === 'range' && "text-purple-900 bg-purple-50",
+            variant === 'size' && "text-orange-900 bg-orange-50"
+          )}
         />
     </div>
 {/snippet}
 
-{#snippet CoverImageContent()}
+{#snippet CoverImageContent({ variant }: { variant?: 'range' | 'size' | null } = {})}
     <div class="space-y-2">
         <Label for="cover-image">Image</Label>
-        <Input id="cover-image" type="file" disabled />
+        <Input 
+            id="cover-image" 
+            type="file" 
+            disabled 
+            class={cn(
+                variant === 'range' && "bg-purple-50",
+                variant === 'size' && "bg-orange-50"
+            )}
+        />
     </div>
 {/snippet}
 
-{#snippet PhotoCreditsContent()}
+{#snippet PhotoCreditsContent({ variant }: { variant?: 'range' | 'size' | null } = {})}
     <div class="space-y-2">
         <Label for="photo-credits">Text</Label>
-        <Input id="photo-credits" value="Photographer Name" readonly />
+        <Input 
+            id="photo-credits" 
+            value="Photographer Name" 
+            readonly 
+            class={cn(
+                variant === 'range' && "text-purple-900 bg-purple-50",
+                variant === 'size' && "text-orange-900 bg-orange-50"
+            )}
+        />
     </div>
 {/snippet}
 
-{#snippet LogoRightContent()}
+{#snippet LogoRightContent({ variant }: { variant?: 'range' | 'size' | null } = {})}
     <div class="space-y-2">
         <Label for="logo-right">Image</Label>
-        <Input id="logo-right" type="file" disabled />
+        <Input 
+            id="logo-right" 
+            type="file" 
+            disabled 
+            class={cn(
+                variant === 'range' && "bg-purple-50",
+                variant === 'size' && "bg-orange-50"
+            )}
+        />
     </div>
 {/snippet}
 
-{#snippet LogoLeftContent()}
+{#snippet LogoLeftContent({ variant }: { variant?: 'range' | 'size' | null } = {})}
     <div class="space-y-2">
         <Label for="logo-left">Image</Label>
-        <Input id="logo-left" type="file" disabled />
+        <Input 
+            id="logo-left" 
+            type="file" 
+            disabled 
+            class={cn(
+                variant === 'range' && "bg-purple-50",
+                variant === 'size' && "bg-orange-50"
+            )}
+        />
     </div>
 {/snippet}
 
-{#snippet FontColourContent()}
+{#snippet FontColourContent({ variant }: { variant?: 'range' | 'size' | null } = {})}
     <div class="space-y-2">
         <Label for="font-colour">Colour</Label>
         <div class="relative">
@@ -347,7 +395,11 @@
                 id="font-colour"
                 value="Orange"
                 disabled
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm appearance-none"
+                class={cn(
+                    "w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-sm appearance-none",
+                    variant === 'range' && "text-purple-900 bg-purple-50 border-purple-200",
+                    variant === 'size' && "text-orange-900 bg-orange-50 border-orange-200"
+                )}
             >
                 <option value="Red">Red</option>
                 <option value="Orange">Orange</option>
@@ -359,11 +411,10 @@
 
 <div
   class={cn(
-    "fixed top-20 right-[80px] w-96 max-h-[calc(100vh-120px)] bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 z-50 transform transition-all duration-300 ease-in-out",
-    isOpen ? 'translate-x-0 opacity-100' : 'translate-x-[80px] opacity-0 pointer-events-none'
+    "fixed top-20 right-[80px] w-96 max-h-[calc(100vh-120px)] bg-white/95 backdrop-blur-sm rounded-lg shadow-lg border border-gray-200 z-50 transition-all duration-300 ease-in-out",
+    isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
   )}
-  style:right={isOpen ? '80px' : '80px'}
-  style:transition='all 0.3s ease-in-out'
+  style:margin-right={isOpen ? '0px' : '-400px'}
 >
 >
   <div class="properties-panel__container flex flex-col h-full max-h-[calc(100vh-120px)]">
@@ -466,6 +517,7 @@
             sectionId: sectionId, 
             children: contentMap[sectionId], 
             extraClass: "border-purple-200 relative",
+            variant: "range",
             onRemove: () => removeRangeOverride(sectionId),
             onApplyClick: (e: MouseEvent) => openApplyDropdown(e, sectionId, 'range')
          })}
@@ -545,6 +597,7 @@
             sectionId: sectionId, 
             children: contentMap[sectionId], 
             extraClass: "border-orange-200 relative",
+            variant: "size",
             onRemove: () => removeSizeOverride(sectionId),
             onApplyClick: (e: MouseEvent) => openApplyDropdown(e, sectionId, 'size')
          })}
