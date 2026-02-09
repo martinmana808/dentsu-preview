@@ -1,4 +1,5 @@
 <script lang="ts">
+  import BreakpointsBar from './components/BreakpointsBar.svelte';
   import TopNavigation from './components/TopNavigation.svelte';
   import TreeView from './components/TreeView.svelte';
   import OverridesMap from './components/maps/OverridesMap.svelte';
@@ -50,25 +51,37 @@
     selectedElement = element;
     isPanelOpen = true;
   };
+
+  const handleFormatChange = (format: AdFormat) => {
+    selectedFormat = format;
+  }
 </script>
 
-<div class="min-h-screen bg-gray-50 flex flex-col font-sans">
+<div class="h-screen bg-gray-50 flex flex-col font-sans overflow-hidden">
+  <!-- Breakpoints / Ranges Bar -->
+  <div class="z-50 relative shadow-sm">
+     <BreakpointsBar 
+        selectedFormat={selectedFormat} 
+        onFormatChange={handleFormatChange}
+     />
+  </div>
+
   <!-- Main Content - Full Screen Canvas -->
   <div class="flex-1 relative overflow-hidden">
     
     <!-- Floating Top Navigation - Very Top -->
-    <div class="absolute top-4 left-1/2 -translate-x-1/2 z-[9999]">
+    <div class="absolute top-4 left-1/2 -translate-x-1/2 z-40">
       <TopNavigation 
         activeTab={topNavTab} 
         onTabChange={(tab) => topNavTab = tab} 
         selectedFormat={selectedFormat}
-        onFormatChange={(format) => selectedFormat = format}
+        onFormatChange={handleFormatChange}
       />
     </div>
 
     <!-- Range Visualizer - Below Format Selector -->
     {#if topNavTab === 'Creative'}
-      <div class="absolute inset-0 flex items-center justify-center p-8">
+      <div class="absolute inset-0 flex items-center justify-center p-8 bg-gray-100/50">
         <AdCanvas format={selectedFormat} onElementClick={handleElementClick} />
       </div>
     {/if}
