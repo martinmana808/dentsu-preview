@@ -247,3 +247,41 @@ Executed the `@[/yolo]` workflow to clear the `TODO.md` list.
 *   `src/components/PropertiesPanelNew.svelte` (Modified)
 *   `src/components/BreakpointsBar.svelte` (Created)
 *   `src/App.svelte` (Modified)
+
+<a name="log-20260209-yolo-v2-features"></a>
+## [2026-02-09] YOLO v2: Data Simulation & UI Polish
+
+**User Prompt:** @[/yolo] (Second iteration)
+
+### Implementation Details
+Executed the second `@[/yolo]` workflow to clear the updated `TODO.md` list.
+
+**1. Local Data Simulation (`src/lib/data.ts`)**
+*   Created `data.ts` exporting `SIZES` and `RANGES` with hardcoded values as requested.
+*   Added logic to assign randomized overrides to each item for demo purposes.
+
+**2. Properties Panel Styling & Logic (`src/components/PropertiesPanelNew.svelte`)**
+*   **Color Coding:**
+    *   **Global:** Green borders and text.
+    *   **Ranges:** Purple borders and text.
+    *   **Sizes:** Orange borders and text.
+*   **Menu Overflow Fix:**
+    *   Refactored "Add Override" and "Apply" dropdowns to use **fixed positioning** at the root level.
+    *   This solves the issue where dropdowns were clipped by the panel's `overflow-hidden`.
+*   **Enhanced "Apply To" UI:**
+    *   Implemented the UI for applying overrides to "All Sizes", "All Ranges", or specific targets with checkboxes.
+
+**3. BEM Classes**
+*   Added BEM-style classes to major components for easier debugging and targeting:
+    *   `.ad-canvas`, `.ad-canvas__creative`, `.ad-canvas__element`
+    *   `.properties-panel__header`, `.properties-panel__tabs`, `.properties-panel__ranges`, `.properties-panel__sizes`
+    *   `.top-navigation`, `.top-navigation__tab`
+    *   `.toolbar`, `.toolbar__tool`
+    *   `.breakpoints-bar`, `.breakpoints-bar__ranges`
+
+### Artifacts
+*   `src/lib/data.ts` (Created)
+*   `src/components/PropertiesPanelNew.svelte` (Modified)
+*   `src/components/AdCanvas.svelte` (Modified)
+*   `src/components/TopNavigation.svelte` (Modified)
+*   `src/components/Toolbar.svelte` (Modified)
