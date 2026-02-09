@@ -48,7 +48,26 @@
   let isAddRangeOverrideOpen = $state(false);
   let isAddSizeOverrideOpen = $state(false);
 
-  let showApplyToDropdown: string | null = $state(null);
+  // Dropdown Management (Lifted State for Overflow Fix)
+  let activeApplyState = $state<{ id: string, type: 'range' | 'size', top: number, left: number } | null>(null);
+  let activeAddOverrideState = $state<{ type: 'range' | 'size', top: number, left: number } | null>(null);
+
+  const openApplyDropdown = (e: MouseEvent, id: string, type: 'range' | 'size') => {
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    activeApplyState = { id, type, top: rect.bottom + 5, left: rect.left };
+    activeAddOverrideState = null;
+  };
+
+  const openAddOverrideDropdown = (e: MouseEvent, type: 'range' | 'size') => {
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    activeAddOverrideState = { type, top: rect.bottom + 5, left: rect.left };
+    activeApplyState = null;
+  };
+
+  const closeDropdowns = () => {
+    activeApplyState = null;
+    activeAddOverrideState = null;
+  };
 
   const addRangeOverride = (sectionId: string) => {
     const newSet = new Set(activeRangeOverrides);
@@ -121,9 +140,8 @@
     sizeOverrideCount = 0, 
     extraClass = "",
     onRemove = undefined,
-    onApply = undefined,
-    applyDropdownOpen = false,
-    onToggleApply = undefined
+    onRemove = undefined,
+    onApplyClick = undefined,
 }: { 
     title: string, 
     sectionId: string, 
@@ -133,9 +151,7 @@
     sizeOverrideCount?: number,
     extraClass?: string,
     onRemove?: () => void,
-    onApply?: () => void,
-    applyDropdownOpen?: boolean,
-    onToggleApply?: (e: Event) => void
+    onApplyClick?: (e: MouseEvent) => void,
 })}
   {@const isExpanded = expandedSections.has(sectionId)}
   {@const borderOverride = isExpanded ? "expanded" : "collapsed"}
@@ -177,24 +193,16 @@
       </div>
       
       <div class="flex items-center gap-2" onclick={(e) => e.stopPropagation()}>
-         {#if onApply && onToggleApply}
+         {#if onApplyClick}
              <div class="relative">
                 <button 
                   class={cn("p-1 rounded text-xs flex items-center gap-1 hover:bg-gray-100", extraClass.includes('purple') ? "text-purple-600" : "text-orange-600")}
                   title="Apply to..."
-                  onclick={onToggleApply}
+                  onclick={onApplyClick}
                 >
                   <ArrowRight class="w-3 h-3" />
                   <span class="text-[10px] font-medium">Apply</span>
                 </button>
-                {#if applyDropdownOpen}
-                    <div class="absolute right-0 top-8 w-40 bg-white shadow-xl rounded-lg border border-gray-200 z-50 py-1" onclick={(e) => e.stopPropagation()}>
-                        <div class="px-2 py-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Apply to...</div>
-                        <button class="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 text-gray-700" onclick={onApply}>All Scopes</button>
-                        <button class="w-full text-left px-3 py-1.5 text-xs hover:bg-gray-50 text-gray-700" onclick={onApply}>Specific...</button>
-                    </div>
-                    <!-- Backdrop handled by parent or simpler click-outside logic needed, but for now this suffices as mock -->
-                {/if}
              </div>
          {/if}
          
@@ -429,38 +437,16 @@
             </Button>
          </div>
 
-         <!-- Add Override Dropdown -->
-         <div class="relative">
-            <Button 
-               variant="outline" 
-               size="sm" 
-               class="h-7 text-xs gap-1 border-purple-200 text-purple-700 hover:bg-purple-50"
-               onclick={() => isAddRangeOverrideOpen = !isAddRangeOverrideOpen}
-            >
-               <Plus class="w-3 h-3" />
-               Add override
-            </Button>
-            
-            {#if isAddRangeOverrideOpen}
-               <div class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50 py-1 max-h-60 overflow-y-auto">
-                  {#each ALL_SECTIONS.filter(s => !activeRangeOverrides.has(s)) as section}
-                     <button
-                        class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-purple-50 hover:text-purple-900"
-                        onclick={() => addRangeOverride(section)}
-                     >
-                        {section}
-                     </button>
-                  {/each}
-                  {#if ALL_SECTIONS.filter(s => !activeRangeOverrides.has(s)).length === 0}
-                     <div class="px-3 py-2 text-xs text-gray-400 italic">No more properties</div>
-                  {/if}
-               </div>
-               <!-- Backdrop -->
-               <!-- svelte-ignore a11y_click_events_have_key_events -->
-               <!-- svelte-ignore a11y_no_static_element_interactions -->
-               <div class="fixed inset-0 z-40" onclick={() => isAddRangeOverrideOpen = false}></div>
-            {/if}
-         </div>
+         <!-- Add Override Dropdown Trigger -->
+         <Button 
+            variant="outline" 
+            size="sm" 
+            class="h-7 text-xs gap-1 border-purple-200 text-purple-700 hover:bg-purple-50"
+            onclick={(e) => openAddOverrideDropdown(e, 'range')}
+         >
+            <Plus class="w-3 h-3" />
+            Add override
+         </Button>
       </div>
 
       {#if activeRangeOverrides.size === 0}
@@ -530,38 +516,16 @@
             </Button>
          </div>
 
-         <!-- Add Override Dropdown -->
-         <div class="relative">
-            <Button 
-               variant="outline" 
-               size="sm" 
-               class="h-7 text-xs gap-1 border-orange-200 text-orange-700 hover:bg-orange-50"
-               onclick={() => isAddSizeOverrideOpen = !isAddSizeOverrideOpen}
-            >
-               <Plus class="w-3 h-3" />
-               Add override
-            </Button>
-            
-            {#if isAddSizeOverrideOpen}
-               <div class="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-50 py-1 max-h-60 overflow-y-auto">
-                  {#each ALL_SECTIONS.filter(s => !activeSizeOverrides.has(s)) as section}
-                     <button
-                        class="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-orange-50 hover:text-orange-900"
-                        onclick={() => addSizeOverride(section)}
-                     >
-                        {section}
-                     </button>
-                  {/each}
-                  {#if ALL_SECTIONS.filter(s => !activeSizeOverrides.has(s)).length === 0}
-                     <div class="px-3 py-2 text-xs text-gray-400 italic">No more properties</div>
-                  {/if}
-               </div>
-               <!-- Backdrop -->
-               <!-- svelte-ignore a11y_click_events_have_key_events -->
-               <!-- svelte-ignore a11y_no_static_element_interactions -->
-               <div class="fixed inset-0 z-40" onclick={() => isAddSizeOverrideOpen = false}></div>
-            {/if}
-         </div>
+         <!-- Add Override Dropdown Trigger -->
+         <Button 
+            variant="outline" 
+            size="sm" 
+            class="h-7 text-xs gap-1 border-orange-200 text-orange-700 hover:bg-orange-50"
+            onclick={(e) => openAddOverrideDropdown(e, 'size')}
+         >
+            <Plus class="w-3 h-3" />
+            Add override
+         </Button>
       </div>
 
       <div class="h-px bg-gray-100 my-2"></div>
@@ -609,4 +573,78 @@
       {/if}
     </div>
   </div>
-</div>
+
+  <!-- Global Dropdowns Layer (Fixed Positioning) -->
+  {#if activeAddOverrideState}
+     {@const isPurple = activeAddOverrideState.type === 'range'}
+     <div 
+        class="fixed w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-[100] py-1 max-h-60 overflow-y-auto"
+        style="top: {activeAddOverrideState.top}px; left: {activeAddOverrideState.left - 100}px;"
+     >
+        {#each ALL_SECTIONS.filter(s => !(activeAddOverrideState.type === 'range' ? activeRangeOverrides : activeSizeOverrides).has(s)) as section}
+            <button
+              class={cn(
+                  "w-full text-left px-3 py-2 text-sm transition-colors",
+                  isPurple ? "text-gray-700 hover:bg-purple-50 hover:text-purple-900" : "text-gray-700 hover:bg-orange-50 hover:text-orange-900"
+              )}
+              onclick={() => activeAddOverrideState.type === 'range' ? addRangeOverride(section) : addSizeOverride(section)}
+            >
+              {section}
+            </button>
+        {/each}
+        {#if ALL_SECTIONS.filter(s => !(activeAddOverrideState.type === 'range' ? activeRangeOverrides : activeSizeOverrides).has(s)).length === 0}
+            <div class="px-3 py-2 text-xs text-gray-400 italic">No more properties</div>
+        {/if}
+     </div>
+     <!-- Backdrop -->
+     <div class="fixed inset-0 z-[99]" onclick={closeDropdowns}></div>
+  {/if}
+
+  {#if activeApplyState}
+     {@const isPurple = activeApplyState.type === 'range'}
+     <div 
+        class="fixed w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-[100] py-2"
+        style="top: {activeApplyState.top}px; left: {activeApplyState.left - 180}px;"
+     >
+         <div class="px-3 py-1.5 text-[10px] font-bold text-gray-400 uppercase tracking-wider border-b border-gray-100 mb-1">
+            Apply {activeApplyState.id} to...
+         </div>
+         
+         <label class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer">
+            <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-offset-0 focus:ring-1 focus:ring-blue-500" />
+            <span class="text-xs font-medium text-gray-700">All Sizes</span>
+         </label>
+
+         <label class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer">
+            <input type="checkbox" class="rounded border-gray-300 text-blue-600 focus:ring-offset-0 focus:ring-1 focus:ring-blue-500" />
+            <span class="text-xs font-medium text-gray-700">All Ranges</span>
+         </label>
+
+         <div class="h-px bg-gray-100 my-1"></div>
+         <div class="px-3 py-1 text-[10px] font-bold text-gray-400 uppercase">Specific</div>
+
+         <div class="max-h-40 overflow-y-auto">
+            {#each sizes as size}
+               <label class="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 cursor-pointer">
+                  <input type="checkbox" class="rounded border-gray-300 text-orange-500 focus:ring-offset-0 focus:ring-1 focus:ring-orange-500" />
+                  <span class="text-xs text-gray-600">{size}</span>
+               </label>
+            {/each}
+            {#each ranges as range}
+               <label class="flex items-center gap-2 px-3 py-1.5 hover:bg-gray-50 cursor-pointer">
+                   <input type="checkbox" class="rounded border-gray-300 text-purple-500 focus:ring-offset-0 focus:ring-1 focus:ring-purple-500" />
+                   <span class="text-xs text-gray-600">{range}</span>
+               </label>
+            {/each}
+         </div>
+
+         <div class="p-2 border-t border-gray-100 mt-1 flex justify-end">
+            <Button size="sm" class="h-7 text-xs bg-blue-600 hover:bg-blue-700 text-white w-full" onclick={closeDropdowns}>
+               Apply Changes
+            </Button>
+         </div>
+     </div>
+     <!-- Backdrop -->
+     <div class="fixed inset-0 z-[99]" onclick={closeDropdowns}></div>
+  {/if}
+  </div>
