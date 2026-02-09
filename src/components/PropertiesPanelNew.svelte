@@ -133,7 +133,6 @@
     sizeOverrideCount = 0, 
     extraClass = "",
     onRemove = undefined,
-    onRemove = undefined,
     onApplyClick = undefined,
 }: { 
     title: string, 
@@ -436,7 +435,7 @@
             variant="outline" 
             size="sm" 
             class="properties-panel__add-override h-7 text-xs gap-1 border-purple-200 text-purple-700 hover:bg-purple-50"
-            onclick={(e) => openAddOverrideDropdown(e, 'range')}
+            onclick={(e: MouseEvent) => openAddOverrideDropdown(e, 'range')}
          >
             <Plus class="w-3 h-3" />
             Add override
@@ -468,9 +467,7 @@
             children: contentMap[sectionId], 
             extraClass: "border-purple-200 relative",
             onRemove: () => removeRangeOverride(sectionId),
-            onApply: () => { showApplyToDropdown = null; },
-            applyDropdownOpen: showApplyToDropdown === sectionId,
-            onToggleApply: (e) => { e.stopPropagation(); showApplyToDropdown = showApplyToDropdown === sectionId ? null : sectionId; }
+            onApplyClick: (e: MouseEvent) => openApplyDropdown(e, sectionId, 'range')
          })}
       {/each}
     </div>
@@ -515,7 +512,7 @@
             variant="outline" 
             size="sm" 
             class="properties-panel__add-override h-7 text-xs gap-1 border-orange-200 text-orange-700 hover:bg-orange-50"
-            onclick={(e) => openAddOverrideDropdown(e, 'size')}
+            onclick={(e: MouseEvent) => openAddOverrideDropdown(e, 'size')}
          >
             <Plus class="w-3 h-3" />
             Add override
@@ -549,9 +546,7 @@
             children: contentMap[sectionId], 
             extraClass: "border-orange-200 relative",
             onRemove: () => removeSizeOverride(sectionId),
-            onApply: () => { showApplyToDropdown = null; },
-            applyDropdownOpen: showApplyToDropdown === sectionId,
-            onToggleApply: (e) => { e.stopPropagation(); showApplyToDropdown = showApplyToDropdown === sectionId ? null : sectionId; }
+            onApplyClick: (e: MouseEvent) => openApplyDropdown(e, sectionId, 'size')
          })}
       {/each}
     </div>
@@ -575,18 +570,21 @@
         class="fixed w-48 bg-white rounded-lg shadow-xl border border-gray-200 z-[100] py-1 max-h-60 overflow-y-auto"
         style="top: {activeAddOverrideState.top}px; left: {activeAddOverrideState.left - 100}px;"
      >
-        {#each ALL_SECTIONS.filter(s => !(activeAddOverrideState.type === 'range' ? activeRangeOverrides : activeSizeOverrides).has(s)) as section}
+        {#each ALL_SECTIONS.filter(s => !(activeAddOverrideState!.type === 'range' ? activeRangeOverrides : activeSizeOverrides).has(s)) as section}
             <button
               class={cn(
                   "w-full text-left px-3 py-2 text-sm transition-colors",
                   isPurple ? "text-gray-700 hover:bg-purple-50 hover:text-purple-900" : "text-gray-700 hover:bg-orange-50 hover:text-orange-900"
               )}
-              onclick={() => activeAddOverrideState.type === 'range' ? addRangeOverride(section) : addSizeOverride(section)}
+              onclick={(e: MouseEvent) => {
+                  e.stopPropagation();
+                  activeAddOverrideState!.type === 'range' ? addRangeOverride(section) : addSizeOverride(section);
+              }}
             >
               {section}
             </button>
         {/each}
-        {#if ALL_SECTIONS.filter(s => !(activeAddOverrideState.type === 'range' ? activeRangeOverrides : activeSizeOverrides).has(s)).length === 0}
+        {#if ALL_SECTIONS.filter(s => !(activeAddOverrideState!.type === 'range' ? activeRangeOverrides : activeSizeOverrides).has(s)).length === 0}
             <div class="px-3 py-2 text-xs text-gray-400 italic">No more properties</div>
         {/if}
      </div>
