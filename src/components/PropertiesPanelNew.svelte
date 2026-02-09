@@ -21,25 +21,18 @@
     onTabChange: (tab: PropertyTab) => void;
   } = $props();
 
-  const ALL_SECTIONS = [
-    'headline', 
-    'description', 
-    'coverImage', 
-    'photoCredits', 
-    'logoBottomRight', 
-    'logoBottomLeft', 
-    'fontColour'
-  ];
+  import { SIZES, RANGES, ALL_SECTIONS } from '@/lib/data';
+
 
   let expandedSections = $state(new Set(['headline', 'description', 'coverImage']));
   
   // Sizes State
   let selectedSize = $state('300x600');
-  const sizes = ['300x600', '300x250', '728x90', '320x50', '160x600'];
+  const sizes = SIZES.map(s => s.label);
 
   // Ranges State
   let selectedRange = $state('<480px');
-  const ranges = ['<480px', '480px>768px', '1000px>2000px', '200px<'];
+  const ranges = RANGES.map(r => r.label);
 
   // Override Management
   let activeRangeOverrides = $state(new Set(['headline']));
@@ -373,9 +366,10 @@
   style:right={isOpen ? '80px' : '80px'}
   style:transition='all 0.3s ease-in-out'
 >
-  <div class="flex flex-col h-full max-h-[calc(100vh-120px)]">
+>
+  <div class="properties-panel__container flex flex-col h-full max-h-[calc(100vh-120px)]">
     <!-- Header -->
-    <div class="flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50/50">
+    <div class="properties-panel__header flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50/50">
       <h2 class="text-gray-900">Properties</h2>
       <div class="flex items-center gap-1">
         <Button variant="ghost" size="icon" onclick={onClose} class="ml-1">
@@ -385,7 +379,7 @@
     </div>
 
     <!-- Tabs -->
-    <div class="flex border-b border-gray-200 bg-gray-50/30">
+    <div class="properties-panel__tabs flex border-b border-gray-200 bg-gray-50/30">
       {#each ['global', 'ranges', 'sizes'] as tab}
         {@const activeColor = tab === 'global' ? 'border-green-500 text-green-700' : tab === 'ranges' ? 'border-purple-500 text-purple-700' : 'border-orange-500 text-orange-700'}
         <button
@@ -404,7 +398,7 @@
 
     <!-- Properties Content -->
 {#snippet renderRangesProperties()}
-    <div class="space-y-3 ranges-properties">
+    <div class="properties-panel__ranges space-y-3 ranges-properties">
       <!-- Range Selector -->
       <div class="px-1">
           <label for="range-selector" class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 block">
@@ -441,7 +435,7 @@
          <Button 
             variant="outline" 
             size="sm" 
-            class="h-7 text-xs gap-1 border-purple-200 text-purple-700 hover:bg-purple-50"
+            class="properties-panel__add-override h-7 text-xs gap-1 border-purple-200 text-purple-700 hover:bg-purple-50"
             onclick={(e) => openAddOverrideDropdown(e, 'range')}
          >
             <Plus class="w-3 h-3" />
@@ -483,7 +477,7 @@
 {/snippet}
 
 {#snippet renderSizesProperties()}
-    <div class="space-y-3 sizes-properties">
+    <div class="properties-panel__sizes space-y-3 sizes-properties">
       <!-- Size Selector -->
       <div class="px-1">
           <label for="size-selector" class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 block">
@@ -520,7 +514,7 @@
          <Button 
             variant="outline" 
             size="sm" 
-            class="h-7 text-xs gap-1 border-orange-200 text-orange-700 hover:bg-orange-50"
+            class="properties-panel__add-override h-7 text-xs gap-1 border-orange-200 text-orange-700 hover:bg-orange-50"
             onclick={(e) => openAddOverrideDropdown(e, 'size')}
          >
             <Plus class="w-3 h-3" />
