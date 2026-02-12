@@ -139,6 +139,8 @@
     expandedSections = newExpanded;
   };
 
+  let currentSizeObj = $derived(SIZES.find(s => s.label === selectedSize));
+
   // Aggregated Counts for Global Tab
   const getAggregatedCounts = (sectionId: string) => {
     let rCount = 0;
@@ -527,7 +529,6 @@
             <label for="size-selector" class="text-xs font-medium text-gray-500 uppercase tracking-wider block">
                 Select Size
             </label>
-            {@const currentSizeObj = SIZES.find(s => s.label === selectedSize)}
             {#if currentSizeObj && currentSizeObj.rangeIds.length > 0}
                 <div class="flex gap-1 items-center">
                     <span class="text-[9px] text-gray-400">Ranges:</span>
