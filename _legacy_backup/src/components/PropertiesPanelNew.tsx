@@ -87,11 +87,11 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement, activeTab
     <div className="space-y-3 global-properties">
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="sm" onClick={expandAll} className="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
-          Expand all properties
+          Expand all 
         </Button>
         <div className="w-px h-3 bg-gray-200" />
         <Button variant="ghost" size="sm" onClick={collapseAll} className="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
-          Collapse all properties
+          Collapse all 
         </Button>
       </div>
       {/* Headline */}
@@ -242,11 +242,11 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement, activeTab
       
       <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" onClick={expandAll} className="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
-                          Expand all properties
+                          Expand all 
             </Button>
             <div className="w-px h-3 bg-gray-200" />
             <Button variant="ghost" size="sm" onClick={collapseAll} className="h-6 text-[10px] blue-600 text-blue-600 hover:text-blue-700 text-xs">
-              Collapse all properties
+              Collapse all 
             </Button>
       </div>
 
@@ -451,11 +451,11 @@ export function PropertiesPanelNew({ isOpen, onClose, selectedElement, activeTab
       </div>
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="sm" onClick={expandAll} className="h-6 text-[10px] px-2 text-blue-600 hover:text-blue-700 text-xs">
-          Expand all properties
+          Expand all 
         </Button>
         <div className="w-px h-3 bg-gray-200" />
         <Button variant="ghost" size="sm" onClick={collapseAll} className="h-6 text-[10px] blue-600 text-blue-600 hover:text-blue-700 text-xs">
-          Collapse all properties
+          Collapse all 
         </Button>
       </div>
       <div className="space-y-3">

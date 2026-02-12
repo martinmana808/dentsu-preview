@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.top-nav button{
+  cursor: pointer!important;
+}
+
+.top-nav__size{
+  cursor: pointer!important;
+}
