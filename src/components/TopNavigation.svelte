@@ -41,10 +41,9 @@
     const minIdx = Math.min(...targetIndices);
     const maxIdx = Math.max(...targetIndices);
     
-    // Each size button is approx 40px wide with gap (8px)
-    // We'll calculate based on the index
-    const startPos = minIdx * 48; // index * (button_width + gap)
-    const endPos = (maxIdx + 1) * 48 - 8; // (last_index + 1) * width - last_gap
+    // Each size button is w-16 (64px) with gap-2 (8px)
+    const startPos = minIdx * 72; // index * (64 + 8)
+    const endPos = (maxIdx + 1) * 72 - 8; 
 
     let color = 'bg-green-500/10 border-green-500';
     if (activePanelTab === 'ranges') color = 'bg-purple-500/10 border-purple-500';
@@ -82,19 +81,16 @@
               onTabChange('sizes');
           }}
           class={cn(
-            "relative z-10 w-10 h-10 rounded-lg flex flex-col items-center justify-center transition-all group",
-            selectedFormat.id === size.id ? "bg-white shadow-sm ring-1 ring-gray-200" : "hover:bg-gray-50"
+            "relative z-10 w-16 h-10 rounded-lg flex flex-col items-center justify-center transition-all group",
+            selectedFormat.id === size.id ? "bg-white shadow-sm ring-1 ring-gray-200 text-gray-900" : "hover:bg-gray-50 text-gray-400 group-hover:text-gray-600"
           )}
           title={size.label}
         >
-          <span class={cn(
-            "text-xs font-bold",
-            selectedFormat.id === size.id ? "text-gray-900" : "text-gray-400 group-hover:text-gray-600"
-          )}>
-            {String.fromCharCode(97 + i)}
+          <span class="text-[9px] font-bold whitespace-nowrap px-1">
+            {size.label}
           </span>
-          <div class="text-[8px] text-gray-400 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
-            {size.width}
+          <div class="text-[7px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">
+            {size.id}
           </div>
         </button>
       {/each}
