@@ -1,97 +1,103 @@
 <script lang="ts">
-  import type { AdFormat } from "@/lib/types";
+  import type { SizeInfo, RangeInfo, PropertyTab } from "@/lib/types";
+  import { SIZES } from "@/lib/data";
   import { cn } from "@/lib/utils";
   
-  const AVAILABLE_FORMATS: AdFormat[] = [
-    { width: 300, height: 250, label: '300 × 250' },
-    { width: 320, height: 50, label: '320 × 50' },
-    { width: 1024, height: 768, label: '1024 × 768' },
-    { width: 300, height: 600, label: '300 × 600' },
-    { width: 728, height: 90, label: '728 × 90' },
-  ];
-
   let { 
-    activeTab, 
-    onTabChange, 
-    selectedFormat, 
-    onFormatChange 
+    selectedFormat,
+    selectedRange,
+    activePanelTab,
+    onFormatChange,
+    onTabChange
   }: {
-    activeTab: 'Creative' | 'Overrides' | 'Ranges';
-    onTabChange: (tab: 'Creative' | 'Overrides' | 'Ranges') => void;
-    selectedFormat: AdFormat;
-    onFormatChange: (format: AdFormat) => void;
+    selectedFormat: SizeInfo;
+    selectedRange: RangeInfo;
+    activePanelTab: PropertyTab;
+    onFormatChange: (format: SizeInfo) => void;
+    onTabChange: (tab: PropertyTab) => void;
   } = $props();
 
-  let isHovered = $state(false);
+  // Helper to check if a size belongs to the selected range
+  const isSizeInSelectedRange = (size: SizeInfo) => {
+    return size.rangeIds.includes(selectedRange.id);
+  };
+
+  // Calculate wrap position and width
+  let wrapStyles = $derived.by(() => {
+    const indices = SIZES.map((_, i) => i);
+    let targetIndices: number[] = [];
+
+    if (activePanelTab === 'global') {
+      targetIndices = indices;
+    } else if (activePanelTab === 'ranges') {
+      targetIndices = SIZES.map((s, i) => isSizeInSelectedRange(s) ? i : -1).filter(i => i !== -1);
+    } else if (activePanelTab === 'sizes') {
+      const idx = SIZES.findIndex(s => s.id === selectedFormat.id);
+      if (idx !== -1) targetIndices = [idx];
+    }
+
+    if (targetIndices.length === 0) return { opacity: 0 };
+
+    const minIdx = Math.min(...targetIndices);
+    const maxIdx = Math.max(...targetIndices);
+    
+    // Each size button is approx 40px wide with gap (8px)
+    // We'll calculate based on the index
+    const startPos = minIdx * 48; // index * (button_width + gap)
+    const endPos = (maxIdx + 1) * 48 - 8; // (last_index + 1) * width - last_gap
+
+    let color = 'bg-green-500/10 border-green-500';
+    if (activePanelTab === 'ranges') color = 'bg-purple-500/10 border-purple-500';
+    if (activePanelTab === 'sizes') color = 'bg-orange-500/10 border-orange-500';
+
+    return {
+      left: `${startPos}px`,
+      width: `${endPos - startPos}px`,
+      color,
+      opacity: 1
+    };
+  });
+
 </script>
 
-<div class="top-navigation bg-white/95 backdrop-blur-sm rounded-full shadow-lg border border-gray-200 px-1 py-1 flex items-center gap-1 z-50">
-  <!-- svelte-ignore a11y_no_static_element_interactions -->
-  <div 
-    class="relative"
-    onmouseenter={() => isHovered = true}
-    onmouseleave={() => isHovered = false}
-  >
-    <button
-      onclick={() => onTabChange('Creative')}
-      class={cn(
-        "top-navigation__tab text-xs px-5 py-1.5 rounded-full transition-all",
-        activeTab === 'Creative'
-          ? 'bg-gray-900 text-white'
-          : 'bg-transparent text-gray-600 hover:bg-gray-100'
-      )}
-    >
-      {activeTab === 'Creative' ? selectedFormat.label : 'Creative view'}
-    </button>
+<div class="top-navigation-container relative flex items-center justify-center">
+    <div class="top-navigation relative bg-white/95 backdrop-blur-sm rounded-xl shadow-lg border border-gray-200 p-2 flex items-center gap-2 z-50">
+      
+      <!-- Reactive Wrap Overlay -->
+      <div 
+        class={cn(
+            "absolute top-1 bottom-1 border-2 rounded-lg transition-all duration-300 ease-in-out z-0 pointer-events-none",
+            wrapStyles.color
+        )}
+        style:left={wrapStyles.left}
+        style:width={wrapStyles.width}
+        style:opacity={wrapStyles.opacity}
+      ></div>
 
-    <!-- Dropdown Menu - Shows on hover -->
-    <div 
-      class={cn(
-        "absolute top-full left-1/2 -translate-x-1/2 pt-2 w-32 transition-all duration-200 z-[9999]",
-        isHovered ? 'opacity-100 visible' : 'opacity-0 invisible'
-      )}
-    >
-      <div class="bg-white rounded-lg shadow-xl border border-gray-100 py-1 flex flex-col gap-0.5">
-        {#each AVAILABLE_FORMATS as format}
-          <button
-            onclick={(e) => {
-              e.stopPropagation();
-              onFormatChange(format);
-              onTabChange('Creative');
-              isHovered = false;
-            }}
-            class={cn(
-              "text-xs px-3 py-2 text-left hover:bg-gray-50 transition-colors",
-              selectedFormat.label === format.label ? 'font-medium text-gray-900 bg-gray-50' : 'text-gray-600'
-            )}
-          >
-            {format.label}
-          </button>
-        {/each}
-      </div>
+      <!-- Size Index Buttons -->
+      {#each SIZES as size, i}
+        <button
+          onclick={() => {
+              onFormatChange(size);
+              onTabChange('sizes');
+          }}
+          class={cn(
+            "relative z-10 w-10 h-10 rounded-lg flex flex-col items-center justify-center transition-all group",
+            selectedFormat.id === size.id ? "bg-white shadow-sm ring-1 ring-gray-200" : "hover:bg-gray-50"
+          )}
+          title={size.label}
+        >
+          <span class={cn(
+            "text-xs font-bold",
+            selectedFormat.id === size.id ? "text-gray-900" : "text-gray-400 group-hover:text-gray-600"
+          )}>
+            {String.fromCharCode(97 + i)}
+          </span>
+          <div class="text-[8px] text-gray-400 mt-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            {size.width}
+          </div>
+        </button>
+      {/each}
     </div>
-  </div>
-
-  <button
-    onclick={() => onTabChange('Overrides')}
-    class={cn(
-      "text-xs px-5 py-1.5 rounded-full transition-all",
-      activeTab === 'Overrides'
-        ? 'bg-gray-900 text-white'
-        : 'bg-transparent text-gray-600 hover:bg-gray-100'
-    )}
-  >
-    Overrides map
-  </button>
-  <button
-    onclick={() => onTabChange('Ranges')}
-    class={cn(
-      "text-xs px-5 py-1.5 rounded-full transition-all",
-      activeTab === 'Ranges'
-        ? 'bg-gray-900 text-white'
-        : 'bg-transparent text-gray-600 hover:bg-gray-100'
-    )}
-  >
-    Ranges map
-  </button>
 </div>
+

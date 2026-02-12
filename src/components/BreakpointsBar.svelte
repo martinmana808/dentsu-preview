@@ -1,22 +1,17 @@
 <script lang="ts">
   import { cn } from "@/lib/utils";
-  import type { AdFormat } from "@/lib/types";
+  import type { SizeInfo } from "@/lib/types";
 
   let { selectedFormat, onFormatChange }: {
-    selectedFormat: AdFormat;
-    onFormatChange: (format: AdFormat) => void;
+    selectedFormat: SizeInfo;
+    onFormatChange: (format: SizeInfo) => void;
   } = $props();
+
+  import { SIZES } from "@/lib/data";
 
   // Mock Data
   const MAX_WIDTH = 1200; // Visual limit for the bar
-  const formats = [
-    { width: 300, height: 600, label: '300x600' },
-    { width: 300, height: 250, label: '300x250' },
-    { width: 728, height: 90, label: '728x90' },
-    { width: 320, height: 50, label: '320x50' },
-    { width: 160, height: 600, label: '160x600' },
-    { width: 970, height: 250, label: '970x250' }
-  ];
+  const formats = SIZES;
 
   const ranges = [
     { start: 0, end: 479, label: '< 480px', color: 'bg-purple-100 border-purple-300' },
@@ -36,8 +31,8 @@
 </script>
 
 <div class="breakpoints-bar w-full bg-white border-b border-gray-200 h-24 flex flex-col relative overflow-hidden select-none">
-  <!-- Ranges Layer -->
-  <div class="breakpoints-bar__ranges h-10 flex w-full relative border-b border-gray-100">
+  <!-- Ranges Layer (Hidden per user request) -->
+  <div class="breakpoints-bar__ranges h-10 flex w-full relative border-b border-gray-100 hidden">
      {#each ranges as range, i}
         <div 
           class={cn(
@@ -57,8 +52,8 @@
      {/each}
   </div>
 
-  <!-- Ruler & Formats Layer -->
-  <div class="breakpoints-bar__ruler flex-1 relative bg-gray-50/50">
+  <!-- Ruler & Formats Layer (Hidden per user request) -->
+  <div class="breakpoints-bar__ruler flex-1 relative bg-gray-50/50 hidden">
      <!-- Ticks -->
      {#each Array.from({ length: 13 }) as _, i}
         <div 

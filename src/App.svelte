@@ -8,10 +8,12 @@
   import AdCanvas from './components/AdCanvas.svelte';
   import Toolbar from './components/Toolbar.svelte';
   import PropertiesPanelNew from './components/PropertiesPanelNew.svelte';
-  import type { AdFormat, PanelMode, SelectedElement, PropertyTab } from '@/lib/types';
+  import type { PanelMode, SelectedElement, PropertyTab, SizeInfo, RangeInfo } from '@/lib/types';
+  import { SIZES, RANGES } from '@/lib/data';
   
   // State
-  let selectedFormat: AdFormat = $state({ width: 300, height: 600, label: '300 × 600' });
+  let selectedFormat: SizeInfo = $state(SIZES[0]);
+  let selectedRange: RangeInfo = $state(RANGES[0]);
   let isPanelOpen = $state(false);
   let panelMode: PanelMode = $state('global');
   let selectedElement: SelectedElement = $state(null);
@@ -52,8 +54,12 @@
     isPanelOpen = true;
   };
 
-  const handleFormatChange = (format: AdFormat) => {
+  const handleFormatChange = (format:  SizeInfo) => {
     selectedFormat = format;
+  }
+
+  const handleRangeChange = (range: RangeInfo) => {
+    selectedRange = range;
   }
 </script>
 
@@ -72,10 +78,11 @@
     <!-- Floating Top Navigation - Very Top -->
     <div class="absolute top-4 left-1/2 -translate-x-1/2 z-40">
       <TopNavigation 
-        activeTab={topNavTab} 
-        onTabChange={(tab) => topNavTab = tab} 
+        activePanelTab={activePanelTab} 
         selectedFormat={selectedFormat}
+        selectedRange={selectedRange}
         onFormatChange={handleFormatChange}
+        onTabChange={(tab) => activePanelTab = tab}
       />
     </div>
 
@@ -86,19 +93,9 @@
       </div>
     {/if}
 
-    <!-- Overrides Mode Info Banner -->
-    {#if topNavTab === 'Overrides'}
-      <div class="absolute top-28 left-1/2 -translate-x-1/2 z-10 w-[calc(100vw-200px)]">
-        <OverridesMap onNavigate={openPanelTab} />
-      </div>
-    {/if}
-    
-    <!-- Ranges Mode Info Banner -->
-    {#if topNavTab === 'Ranges'}
-      <div class="absolute top-28 left-1/2 -translate-x-1/2 z-10 w-[calc(100vw-200px)]">
-        <RangesMap onNavigate={openPanelTab} />
-      </div>
-    {/if}
+    <!-- Maps hidden per user request -->
+    <!-- {#if topNavTab === 'Overrides'} ... {/if} -->
+    <!-- {#if topNavTab === 'Ranges'} ... {/if} -->
 
     <!-- Floating Toolbar - Right Side -->
     <div 
@@ -125,6 +122,10 @@
       selectedElement={selectedElement}
       activeTab={activePanelTab}
       onTabChange={(tab) => activePanelTab = tab}
+      bind:selectedSizeLabel={selectedFormat.label}
+      bind:selectedRangeLabel={selectedRange.label}
+      onFormatChange={handleFormatChange}
+      onRangeChange={handleRangeChange}
     />
 
     <!-- Hierarchy Legend - Right Side -->

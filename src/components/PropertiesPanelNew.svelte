@@ -4,7 +4,7 @@
   import Input from './ui/Input.svelte';
   import Label from './ui/Label.svelte';
   import Textarea from './ui/Textarea.svelte';
-  import type { SelectedElement, PropertyTab } from '@/lib/types';
+  import type { SelectedElement, PropertyTab, SizeInfo, RangeInfo } from '@/lib/types';
   import { cn } from '@/lib/utils';
   
   let { 
@@ -12,13 +12,21 @@
     onClose, 
     selectedElement, 
     activeTab, 
-    onTabChange 
+    onTabChange,
+    selectedSizeLabel = $bindable(),
+    selectedRangeLabel = $bindable(),
+    onFormatChange,
+    onRangeChange
   }: {
     isOpen: boolean;
     onClose: () => void;
     selectedElement: SelectedElement;
     activeTab: PropertyTab;
     onTabChange: (tab: PropertyTab) => void;
+    selectedSizeLabel: string;
+    selectedRangeLabel: string;
+    onFormatChange: (format: SizeInfo) => void;
+    onRangeChange: (range: RangeInfo) => void;
   } = $props();
 
   import { SIZES, RANGES, ALL_SECTIONS } from '@/lib/data';
@@ -27,11 +35,9 @@
   let expandedSections = $state(new Set(['headline', 'description', 'coverImage']));
   
   // Sizes State
-  let selectedSize = $state('300x600');
   const sizes = SIZES.map(s => s.label);
 
   // Ranges State
-  let selectedRange = $state('<480px');
   const ranges = RANGES.map(r => r.label);
 
   // Override Management - Reactive Maps synced with Database
@@ -39,8 +45,8 @@
   let sizeOverridesMap = $state(new Map(SIZES.map(s => [s.label, new Set(s.overrides)])));
 
   // Derived active sets based on current selection
-  let activeRangeOverrides = $derived(rangeOverridesMap.get(selectedRange) || new Set<string>());
-  let activeSizeOverrides = $derived(sizeOverridesMap.get(selectedSize) || new Set<string>());
+  let activeRangeOverrides = $derived(rangeOverridesMap.get(selectedRangeLabel) || new Set<string>());
+  let activeSizeOverrides = $derived(sizeOverridesMap.get(selectedSizeLabel) || new Set<string>());
   
   let isAddRangeOverrideOpen = $state(false);
   let isAddSizeOverrideOpen = $state(false);
@@ -67,11 +73,11 @@
   };
 
   const addRangeOverride = (sectionId: string) => {
-    const current = rangeOverridesMap.get(selectedRange);
+    const current = rangeOverridesMap.get(selectedRangeLabel);
     if (current) {
         const next = new Set(current);
         next.add(sectionId);
-        rangeOverridesMap.set(selectedRange, next);
+        rangeOverridesMap.set(selectedRangeLabel, next);
     }
     isAddRangeOverrideOpen = false;
     // Auto-expand
@@ -79,31 +85,31 @@
   };
 
   const removeRangeOverride = (sectionId: string) => {
-    const current = rangeOverridesMap.get(selectedRange);
+    const current = rangeOverridesMap.get(selectedRangeLabel);
     if (current) {
         const next = new Set(current);
         next.delete(sectionId);
-        rangeOverridesMap.set(selectedRange, next);
+        rangeOverridesMap.set(selectedRangeLabel, next);
     }
   };
 
   const addSizeOverride = (sectionId: string) => {
-     const current = sizeOverridesMap.get(selectedSize);
+     const current = sizeOverridesMap.get(selectedSizeLabel);
      if (current) {
          const next = new Set(current);
          next.add(sectionId);
-         sizeOverridesMap.set(selectedSize, next);
+         sizeOverridesMap.set(selectedSizeLabel, next);
      }
      isAddSizeOverrideOpen = false;
      if (!expandedSections.has(sectionId)) toggleSection(sectionId);
   };
 
   const removeSizeOverride = (sectionId: string) => {
-     const current = sizeOverridesMap.get(selectedSize);
+     const current = sizeOverridesMap.get(selectedSizeLabel);
      if (current) {
          const next = new Set(current);
          next.delete(sectionId);
-         sizeOverridesMap.set(selectedSize, next);
+         sizeOverridesMap.set(selectedSizeLabel, next);
      }
   };
 
@@ -139,7 +145,7 @@
     expandedSections = newExpanded;
   };
 
-  let currentSizeObj = $derived(SIZES.find(s => s.label === selectedSize));
+  let currentSizeObj = $derived(SIZES.find(s => s.label === selectedSizeLabel));
 
   // Aggregated Counts for Global Tab
   const getAggregatedCounts = (sectionId: string) => {
@@ -453,8 +459,13 @@
           <div class="relative">
              <select
                  id="range-selector"
-                 bind:value={selectedRange}
+                 bind:value={selectedRangeLabel}
                  class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm appearance-none cursor-pointer hover:border-blue-400 transition-colors focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
+                 onchange={(e) => {
+                     const label = (e.currentTarget as HTMLSelectElement).value;
+                     const range = RANGES.find(r => r.label === label);
+                     if (range) onRangeChange(range);
+                 }}
              >
                  {#each ranges as range}
                      <option value={range}>{range}</option>
@@ -542,8 +553,13 @@
           <div class="relative">
              <select
                  id="size-selector"
-                 bind:value={selectedSize}
+                 bind:value={selectedSizeLabel}
                  class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-orange-50 text-sm appearance-none cursor-pointer hover:border-orange-400 transition-colors focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none"
+                 onchange={(e) => {
+                     const label = (e.currentTarget as HTMLSelectElement).value;
+                     const size = SIZES.find(s => s.label === label);
+                     if (size) onFormatChange(size);
+                 }}
              >
                  {#each sizes as size}
                      <option value={size}>{size}</option>
