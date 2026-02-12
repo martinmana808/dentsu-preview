@@ -4,6 +4,11 @@
 **D4 Preview** is a **Svelte 5** application built with Vite and TypeScript. It utilizes Bits UI for its component library and features specialized visualization tools including maps, tree views, and an ad canvas.
 
 ## History
+### [2026-02-12] Navigation Refactor | [Index Mode & Visual Wraps](./GEMINI--logs.md#log-20260212-navigation-refactor)
+*   **Top Nav**: Replaced dropdown with an (a, b, c...) index list for all sizes.
+*   **Visual Wraps**: Implemented reactive overlays for Global (Green), Range (Purple), and Size (Orange) modes.
+*   **Layout Cleanup**: Hid the Overrides/Ranges maps and the Breakpoints ruler/segments.
+
 ### [2026-02-12] YOLO V3 | [Linked Database Architecture](./GEMINI--logs.md#log-20260212-linked-db-refactor)
 *   **Data Model**: Implemented many-to-many relationship between Sizes and Ranges.
 *   **Reactivity**: Overrides now dynamically update in the panel based on selection.

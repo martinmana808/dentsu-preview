@@ -14,8 +14,8 @@
 
 *   **AdCanvas:** Pixel-perfect rendering of ad creatives.
 *   **Tree View:** Interactive, recursive visualization of data hierarchies.
-*   **Properties Panel:** Detailed inspection and editing of selected elements.
-*   **Visualizer Maps:** Context-aware overlays for overrides and ranges.
+*   **Index Navigation:** contextual size index with reactive visual overlays for Global, Range, and Size modes.
+*   **Linked Database:** Intelligent data layer linking formats to specific ranges and overrides.
 
 ## Getting Started
 

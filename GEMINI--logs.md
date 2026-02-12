@@ -340,3 +340,35 @@ Refactored the data model and component state to support a complex, linked relat
 *   `src/lib/types.ts` (Updated types)
 *   `src/lib/data.ts` (Linked database)
 *   `src/components/PropertiesPanelNew.svelte` (Logic overhaul)
+
+<a name="log-20260212-navigation-refactor"></a>
+## [2026-02-12] Navigation Refactor: Index Mode & Visual Wraps
+
+**User Prompt:** `the top-navigation should be a list of all the sizes, always shown... index style (a b c d)... visual wrappers based on mode...`
+
+### Implementation Details
+Transformed the top navigation from a simple dropdown into a contextual "Index" that visualizes the current scope of work.
+
+**1. Index Navigation (`TopNavigation.svelte`)**
+*   Displays all `SIZES` as small circular icons labeled (a, b, c, d...) to serve as a quick-tab index.
+*   Clicking an item selects that format and automatically switches the Property Panel to the "Sizes" tab for that format.
+
+**2. Visual Wraps**
+*   Implemented a reactive `wrapStyles` derived state that calculates the CSS position and width for an overlay `div`.
+*   **Green Wrap**: Covers all sizes when the Global tab is active.
+*   **Purple Wrap**: Covers only the sizes within the selected range when the Ranges tab is active.
+*   **Orange Wrap**: Covers only the single selected size when the Sizes tab is active.
+
+**3. State Lifting (`App.svelte`)**
+*   Lifted `selectedFormat` and `selectedRange` to `App.svelte` to allow synchronization between navigation and the properties panel.
+*   Ensured two-way binding for selection labels so updating one component reflects in the other.
+
+**4. Layout Cleanup**
+*   Hid `OverridesMap`, `RangesMap`, and the detailed information segments/ruler in `BreakpointsBar.svelte` to focus the UI on the new selection model.
+
+### Artifacts
+*   `src/components/TopNavigation.svelte` (Complete Rebuild)
+*   `src/components/BreakpointsBar.svelte` (Segments hidden)
+*   `src/App.svelte` (State orchestration & hiding maps)
+*   `src/components/PropertiesPanelNew.svelte` (Prop-based selection)
+
