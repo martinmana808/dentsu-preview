@@ -372,3 +372,44 @@ Transformed the top navigation from a simple dropdown into a contextual "Index" 
 *   `src/App.svelte` (State orchestration & hiding maps)
 *   `src/components/PropertiesPanelNew.svelte` (Prop-based selection)
 
+<a name="log-20260212-adcanvas-overhaul"></a>
+## [2026-02-12] AdCanvas Overhaul & Navigation Fixes
+
+**User Prompt:** `the .crosshair should always be on the center... indications of {pixels} x and y... dimmed overflow... the crosshair should always be the same 'size'... to the topbar, at the end, add a [+]... activeIndices are not just the starting and ending... sizes might not fit... auto-fit...`
+
+### Implementation Plan
+[Artifact Content Copied Below]
+
+# AdCanvas Auto-Fit & Navigation Enhancement
+
+Refine the top navigation to ensure all sizes covered by the reactive overlay (pill) are correctly highlighted, add a new "Add" functionality, and implement proportional scaling for the canvas.
+
+## Proposed Changes
+
+### AdCanvas Component
+#### [MODIFY] [AdCanvas.svelte](file:///Users/martinmana/Documents/Projects/d4-preview/src/components/AdCanvas.svelte)
+- Implemented dynamic scaling that shrinks large creatives to fit the viewport.
+- Added a coordinate HUD (Position X/Y) and Zoom level indicators.
+- Applied inverse scaling to the crosshair so it stays a constant visual size.
+- Refined overflow dimming using a `box-shadow` spotlight effect to cover corners.
+
+### Top Navigation Component
+#### [MODIFY] [TopNavigation.svelte](file:///Users/martinmana/Documents/Projects/d4-preview/src/components/TopNavigation.svelte)
+- Updated highlighting logic to include all intermediate sizes in a range.
+- Added a "[+]" button with a popover for adding new ranges and sizes.
+
+## Walkthrough
+[Artifact Content Copied Below]
+
+# Walkthrough - AdCanvas Visual Overhaul & Reactivity Stabilization
+
+## Changes Made
+- **Infinite Loop Resolution**: Fixed a critical browser crash in `PropertiesPanelNew.svelte` by utilizing Svelte 5's `untrack()` for reactive sections.
+- **Auto-Fit Scaling**: Implemented a dynamic fit-to-viewport system in `AdCanvas` so large banners are always fully visible while maintaining pixel-perfect coordinate tracking.
+- **Top Navigation Overhaul**: Added a new "[+]" menu for adding ranges/sizes and fixed highlighting for intermediate items in the index list.
+- **Spatial Feedback**: Added a real-time coordinate HUD and a fixed-scale crosshair to the canvas for professional layout precision.
+
+## Verification Results
+- **Resilience**: The infinite loop is gone; clicking elements or switching sizes is now stable.
+- **Visuals**: The overflow "spotlight" dimming corner bug is fixed using a `box-shadow` technique.
+- **Scaling**: Verified that 2160x3840 creatives scale down correctly and panning remains 1:1 with mouse movement.

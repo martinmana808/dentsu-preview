@@ -12,10 +12,11 @@
 
 ## Features
 
-*   **AdCanvas:** Pixel-perfect rendering of ad creatives.
-*   **Tree View:** Interactive, recursive visualization of data hierarchies.
-*   **Index Navigation:** contextual size index with reactive visual overlays for Global, Range, and Size modes.
-*   **Linked Database:** Intelligent data layer linking formats to specific ranges and overrides.
+*   **AdCanvas Overlay**: Pixel-perfect rendering with real-time X/Y HUD, Zoom tracking, and **Auto-Fit scaling** for massive formats.
+*   **Spatial Reference**: Includes fixed-scale crosshairs and spotlight-style overflow dimming for layout precision.
+*   **Tree View**: Interactive, recursive visualization of data hierarchies.
+*   **Index Navigation**: Contextual size index with reactive visual overlays and a "[+]" expansion menu for dynamic management.
+*   **Linked Database**: Intelligent data layer linking formats to specific ranges and overrides.
 
 ## Getting Started
 

@@ -13,8 +13,8 @@
     selectedElement, 
     activeTab, 
     onTabChange,
-    selectedSizeLabel = $bindable(),
-    selectedRangeLabel = $bindable(),
+    selectedSizeLabel,
+    selectedRangeLabel,
     onFormatChange,
     onRangeChange
   }: {
@@ -34,13 +34,13 @@
 
   let expandedSections = $state(new Set(['headline', 'description', 'coverImage']));
   
-  // Sizes State
+  // Selection state
   const sizes = SIZES.map(s => s.label);
 
-  // Ranges State
+  // Range definitions
   const ranges = RANGES.map(r => r.label);
 
-  // Override Management - Reactive Maps synced with Database
+  // Override Management
   let rangeOverridesMap = $state(new Map(RANGES.map(r => [r.label, new Set(r.overrides)])));
   let sizeOverridesMap = $state(new Map(SIZES.map(s => [s.label, new Set(s.overrides)])));
 
@@ -51,7 +51,7 @@
   let isAddRangeOverrideOpen = $state(false);
   let isAddSizeOverrideOpen = $state(false);
 
-  // Dropdown Management (Lifted State for Overflow Fix)
+  // Portal-like positioning state for dropdowns
   let activeApplyState = $state<{ id: string, type: 'range' | 'size', top: number, left: number } | null>(null);
   let activeAddOverrideState = $state<{ type: 'range' | 'size', top: number, left: number } | null>(null);
 
@@ -116,22 +116,27 @@
   const expandAll = () => expandedSections = new Set(ALL_SECTIONS);
   const collapseAll = () => expandedSections = new Set();
 
+  import { untrack } from 'svelte';
+
   $effect(() => {
     if (selectedElement) {
-      onTabChange('sizes');
-      const elementMap: Record<string, string> = {
-        headline: 'headline',
-        description: 'description',
-        coverImage: 'coverImage',
-        photoCredits: 'photoCredits',
-        logoBottomLeft: 'logoBottomLeft',
-        logoBottomRight: 'logoBottomRight',
-      };
-      if (elementMap[selectedElement]) {
-        const newExpanded = new Set(expandedSections);
-        newExpanded.add(elementMap[selectedElement]);
-        expandedSections = newExpanded;
-      }
+      untrack(() => {
+        onTabChange('sizes');
+        const elementMap: Record<string, string> = {
+          headline: 'headline',
+          description: 'description',
+          coverImage: 'coverImage',
+          photoCredits: 'photoCredits',
+          logoBottomLeft: 'logoBottomLeft',
+          logoBottomRight: 'logoBottomRight',
+        };
+        const targetSection = elementMap[selectedElement];
+        if (targetSection && !expandedSections.has(targetSection)) {
+          const newExpanded = new Set(expandedSections);
+          newExpanded.add(targetSection);
+          expandedSections = newExpanded;
+        }
+      });
     }
   });
 
@@ -418,7 +423,6 @@
   )}
   style:margin-right={isOpen ? '0px' : '-400px'}
 >
->
   <div class="properties-panel__container flex flex-col h-full max-h-[calc(100vh-120px)]">
     <!-- Header -->
     <div class="properties-panel__header flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50/50">
@@ -459,10 +463,10 @@
           <div class="relative">
              <select
                  id="range-selector"
-                 bind:value={selectedRangeLabel}
+                 value={selectedRangeLabel}
                  class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm appearance-none cursor-pointer hover:border-blue-400 transition-colors focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none"
-                 onchange={(e) => {
-                     const label = (e.currentTarget as HTMLSelectElement).value;
+                 onchange={(e: Event & { currentTarget: EventTarget & HTMLSelectElement }) => {
+                     const label = e.currentTarget.value;
                      const range = RANGES.find(r => r.label === label);
                      if (range) onRangeChange(range);
                  }}
@@ -553,10 +557,10 @@
           <div class="relative">
              <select
                  id="size-selector"
-                 bind:value={selectedSizeLabel}
+                 value={selectedSizeLabel}
                  class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-orange-50 text-sm appearance-none cursor-pointer hover:border-orange-400 transition-colors focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none"
-                 onchange={(e) => {
-                     const label = (e.currentTarget as HTMLSelectElement).value;
+                 onchange={(e: Event & { currentTarget: EventTarget & HTMLSelectElement }) => {
+                     const label = e.currentTarget.value;
                      const size = SIZES.find(s => s.label === label);
                      if (size) onFormatChange(size);
                  }}

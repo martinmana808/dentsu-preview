@@ -9,7 +9,7 @@
 
   import { SIZES } from "@/lib/data";
 
-  // Mock Data
+  // Configuration and format definitions
   const MAX_WIDTH = 1200; // Visual limit for the bar
   const formats = SIZES;
 
@@ -31,7 +31,7 @@
 </script>
 
 <div class="breakpoints-bar w-full bg-white border-b border-gray-200 h-24 flex flex-col relative overflow-hidden select-none">
-  <!-- Ranges Layer (Hidden per user request) -->
+  <!-- Ranges Layer -->
   <div class="breakpoints-bar__ranges h-10 flex w-full relative border-b border-gray-100 hidden">
      {#each ranges as range, i}
         <div 
@@ -52,7 +52,7 @@
      {/each}
   </div>
 
-  <!-- Ruler & Formats Layer (Hidden per user request) -->
+  <!-- Ruler & Formats Layer -->
   <div class="breakpoints-bar__ruler flex-1 relative bg-gray-50/50 hidden">
      <!-- Ticks -->
      {#each Array.from({ length: 13 }) as _, i}

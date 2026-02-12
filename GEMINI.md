@@ -4,6 +4,12 @@
 **D4 Preview** is a **Svelte 5** application built with Vite and TypeScript. It utilizes Bits UI for its component library and features specialized visualization tools including maps, tree views, and an ad canvas.
 
 ## History
+### [2026-02-12] AdCanvas Overhaul | [Spatial UX & Scaling](./GEMINI--logs.md#log-20260212-adcanvas-overhaul)
+*   **Auto-Fit Scaling**: Implemented dynamic viewport fitting with 1:1 panning sensitivity.
+*   **Spatial HUD**: Added real-time X/Y position and Zoom level tracking.
+*   **Navigation [+]**: Added "Add New Range/Size" menu and fixed range highlighting issues.
+*   **Spotlight Dimming**: Fixed overflow visualization corner rendering using box-shadows.
+
 ### [2026-02-12] Navigation Refactor | [Index Mode & Visual Wraps](./GEMINI--logs.md#log-20260212-navigation-refactor)
 *   **Top Nav**: Replaced dropdown with an (a, b, c...) index list for all sizes.
 *   **Visual Wraps**: Implemented reactive overlays for Global (Green), Range (Purple), and Size (Orange) modes.

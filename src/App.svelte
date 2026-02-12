@@ -1,5 +1,4 @@
 <script lang="ts">
-  import BreakpointsBar from './components/BreakpointsBar.svelte';
   import TopNavigation from './components/TopNavigation.svelte';
   import TreeView from './components/TreeView.svelte';
   import OverridesMap from './components/maps/OverridesMap.svelte';
@@ -65,12 +64,14 @@
 
 <div class="h-screen bg-gray-50 flex flex-col font-sans overflow-hidden">
   <!-- Breakpoints / Ranges Bar -->
+  <!-- 
   <div class="z-50 relative shadow-sm">
      <BreakpointsBar 
         selectedFormat={selectedFormat} 
         onFormatChange={handleFormatChange}
      />
-  </div>
+  </div> 
+  -->
 
   <!-- Main Content - Full Screen Canvas -->
   <div class="flex-1 relative overflow-hidden">
@@ -93,9 +94,7 @@
       </div>
     {/if}
 
-    <!-- Maps hidden per user request -->
-    <!-- {#if topNavTab === 'Overrides'} ... {/if} -->
-    <!-- {#if topNavTab === 'Ranges'} ... {/if} -->
+    <!-- Contextual Maps -->
 
     <!-- Floating Toolbar - Right Side -->
     <div 
@@ -122,8 +121,8 @@
       selectedElement={selectedElement}
       activeTab={activePanelTab}
       onTabChange={(tab) => activePanelTab = tab}
-      bind:selectedSizeLabel={selectedFormat.label}
-      bind:selectedRangeLabel={selectedRange.label}
+      selectedSizeLabel={selectedFormat.label}
+      selectedRangeLabel={selectedRange.label}
       onFormatChange={handleFormatChange}
       onRangeChange={handleRangeChange}
     />
