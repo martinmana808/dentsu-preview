@@ -34,9 +34,13 @@
   let selectedRange = $state('<480px');
   const ranges = RANGES.map(r => r.label);
 
-  // Override Management
-  let activeRangeOverrides = $state(new Set(['headline']));
-  let activeSizeOverrides = $state(new Set(['description', 'coverImage']));
+  // Override Management - Reactive Maps synced with Database
+  let rangeOverridesMap = $state(new Map(RANGES.map(r => [r.label, new Set(r.overrides)])));
+  let sizeOverridesMap = $state(new Map(SIZES.map(s => [s.label, new Set(s.overrides)])));
+
+  // Derived active sets based on current selection
+  let activeRangeOverrides = $derived(rangeOverridesMap.get(selectedRange) || new Set<string>());
+  let activeSizeOverrides = $derived(sizeOverridesMap.get(selectedSize) || new Set<string>());
   
   let isAddRangeOverrideOpen = $state(false);
   let isAddSizeOverrideOpen = $state(false);
@@ -63,32 +67,44 @@
   };
 
   const addRangeOverride = (sectionId: string) => {
-    const newSet = new Set(activeRangeOverrides);
-    newSet.add(sectionId);
-    activeRangeOverrides = newSet;
+    const current = rangeOverridesMap.get(selectedRange);
+    if (current) {
+        const next = new Set(current);
+        next.add(sectionId);
+        rangeOverridesMap.set(selectedRange, next);
+    }
     isAddRangeOverrideOpen = false;
     // Auto-expand
     if (!expandedSections.has(sectionId)) toggleSection(sectionId);
   };
 
   const removeRangeOverride = (sectionId: string) => {
-    const newSet = new Set(activeRangeOverrides);
-    newSet.delete(sectionId);
-    activeRangeOverrides = newSet;
+    const current = rangeOverridesMap.get(selectedRange);
+    if (current) {
+        const next = new Set(current);
+        next.delete(sectionId);
+        rangeOverridesMap.set(selectedRange, next);
+    }
   };
 
   const addSizeOverride = (sectionId: string) => {
-     const newSet = new Set(activeSizeOverrides);
-     newSet.add(sectionId);
-     activeSizeOverrides = newSet;
+     const current = sizeOverridesMap.get(selectedSize);
+     if (current) {
+         const next = new Set(current);
+         next.add(sectionId);
+         sizeOverridesMap.set(selectedSize, next);
+     }
      isAddSizeOverrideOpen = false;
      if (!expandedSections.has(sectionId)) toggleSection(sectionId);
   };
 
   const removeSizeOverride = (sectionId: string) => {
-     const newSet = new Set(activeSizeOverrides);
-     newSet.delete(sectionId);
-     activeSizeOverrides = newSet;
+     const current = sizeOverridesMap.get(selectedSize);
+     if (current) {
+         const next = new Set(current);
+         next.delete(sectionId);
+         sizeOverridesMap.set(selectedSize, next);
+     }
   };
 
   const expandAll = () => expandedSections = new Set(ALL_SECTIONS);
@@ -121,6 +137,15 @@
       newExpanded.add(section);
     }
     expandedSections = newExpanded;
+  };
+
+  // Aggregated Counts for Global Tab
+  const getAggregatedCounts = (sectionId: string) => {
+    let rCount = 0;
+    rangeOverridesMap.forEach(set => { if (set.has(sectionId)) rCount++; });
+    let sCount = 0;
+    sizeOverridesMap.forEach(set => { if (set.has(sectionId)) sCount++; });
+    return { rangeOverrideCount: rCount, sizeOverrideCount: sCount };
   };
 </script>
 
@@ -239,60 +264,27 @@
         </Button>
       </div>
 
-      <!-- Headline -->
-      {@render PropertySection({
-        title: "Headline",
-        sectionId: "headline",
-        rangeOverrideCount: 2,
-        sizeOverrideCount: 1,
-        children: HeadlineContent
-      })}
-
-      <!-- Description -->
-      {@render PropertySection({
-        title: "Description",
-        sectionId: "description",
-        sizeOverrideCount: 3,
-        children: DescriptionContent
-      })}
-
-      <!-- Cover Image -->
-      {@render PropertySection({
-        title: "Cover Image",
-        sectionId: "coverImage",
-        rangeOverrideCount: 1,
-        children: CoverImageContent
-      })}
-
-      <!-- Photo Credits -->
-      {@render PropertySection({
-        title: "Photo Credits",
-        sectionId: "photoCredits",
-        children: PhotoCreditsContent
-      })}
-
-      <!-- Bottom Right Logo -->
-      {@render PropertySection({
-        title: "Bottom Right Logo",
-        sectionId: "logoBottomRight",
-        children: LogoRightContent
-      })}
-
-      <!-- Bottom Left Logo -->
-      {@render PropertySection({
-        title: "Bottom Left Logo",
-        sectionId: "logoBottomLeft",
-        children: LogoLeftContent
-      })}
-
-      <!-- Font Colour -->
-      {@render PropertySection({
-        title: "Font Colour",
-        sectionId: "fontColour",
-        rangeOverrideCount: 1,
-        children: FontColourContent,
-        extraClass: "border-green-200"
-      })}
+      {#each ALL_SECTIONS as sectionId}
+         {@const titleMap: Record<string, string> = {
+            headline: "Headline", description: "Description", coverImage: "Cover Image",
+            photoCredits: "Photo Credits", logoBottomRight: "Bottom Right Logo",
+            logoBottomLeft: "Bottom Left Logo", fontColour: "Font Colour"
+         }}
+         {@const contentMap: Record<string, any> = {
+            headline: HeadlineContent, description: DescriptionContent, coverImage: CoverImageContent,
+            photoCredits: PhotoCreditsContent, logoBottomRight: LogoRightContent,
+            logoBottomLeft: LogoLeftContent, fontColour: FontColourContent
+         }}
+         {@const counts = getAggregatedCounts(sectionId)}
+         
+         {@render PropertySection({
+            title: titleMap[sectionId],
+            sectionId: sectionId,
+            rangeOverrideCount: counts.rangeOverrideCount,
+            sizeOverrideCount: counts.sizeOverrideCount,
+            children: contentMap[sectionId]
+         })}
+      {/each}
     </div>
 {/snippet}
 
@@ -531,9 +523,21 @@
     <div class="properties-panel__sizes space-y-3 sizes-properties">
       <!-- Size Selector -->
       <div class="px-1">
-          <label for="size-selector" class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1.5 block">
-            Select Size
-          </label>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="size-selector" class="text-xs font-medium text-gray-500 uppercase tracking-wider block">
+                Select Size
+            </label>
+            {@const currentSizeObj = SIZES.find(s => s.label === selectedSize)}
+            {#if currentSizeObj && currentSizeObj.rangeIds.length > 0}
+                <div class="flex gap-1 items-center">
+                    <span class="text-[9px] text-gray-400">Ranges:</span>
+                    {#each currentSizeObj.rangeIds as rid}
+                        {@const rangeObj = RANGES.find(r => r.id === rid)}
+                        <span class="text-[9px] font-bold px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded-full">{rangeObj?.label || rid}</span>
+                    {/each}
+                </div>
+            {/if}
+          </div>
           <div class="relative">
              <select
                  id="size-selector"
@@ -573,7 +577,7 @@
          </Button>
       </div>
 
-      <div class="h-px bg-gray-100 my-2"></div>
+      <!-- <div class="h-px bg-gray-100 my-2"></div> -->
 
       {#if activeSizeOverrides.size === 0}
          <div class="text-center py-8 text-gray-400 text-sm italic bg-gray-50 rounded-lg border border-dashed border-gray-200">

@@ -313,3 +313,30 @@ Addressed specific UI regressions and styling requests following the YOLO v2 upd
 *   `src/components/PropertiesPanelNew.svelte` (Major Refactor)
 *   `src/components/ui/Input.svelte` (Styling tweaks)
 *   `src/components/ui/Textarea.svelte` (Styling tweaks)
+
+<a name="log-20260212-linked-db-refactor"></a>
+## [2026-02-12] YOLO V3: Linked Database Architecture
+
+**User Prompt:** `the database should be different... each size should belong (or not) to zero, one, multiple ranges...`
+
+### Implementation Details
+Refactored the data model and component state to support a complex, linked relationship between Sizes, Ranges, and Overrides.
+
+**1. Data Model (`types.ts` & `data.ts`)**
+*   Introduced `RangeInfo` and `SizeInfo` interfaces.
+*   Implemented a many-to-many relationship: `SizeInfo` now contains `rangeIds`.
+*   Moved hardcoded "database" to a static set of linked objects in `data.ts`.
+
+**2. Reactive Overrides (`PropertiesPanelNew.svelte`)**
+*   **State Migration**: Replaced simple Sets with `$state` Maps (`rangeOverridesMap`, `sizeOverridesMap`) initialized from the database.
+*   **Reactive Selection**: Overrides are now derived based on the currently selected Size or Range using `$derived`.
+*   **Dynamic Counts**: The Global properties tab now calculates and displays override counts dynamically by aggregating all range/size states.
+
+**3. UX Improvements**
+*   Added "Associated Ranges" badges to the Size selector in the Properties Panel to visualize the linked hierarchy.
+*   Overridden inputs now show proper variant color coding (Purple for Ranges, Orange for Sizes) based on the context they are viewed in.
+
+### Artifacts
+*   `src/lib/types.ts` (Updated types)
+*   `src/lib/data.ts` (Linked database)
+*   `src/components/PropertiesPanelNew.svelte` (Logic overhaul)
